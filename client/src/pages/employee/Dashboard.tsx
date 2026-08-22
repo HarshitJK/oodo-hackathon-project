@@ -54,15 +54,15 @@ interface EmployeeDashboardData {
 }
 
 const statusBadge: Record<string, string> = {
-  PRESENT: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-900/30 text-emerald-400 border border-emerald-700/30",
-  HALF_DAY: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-900/30 text-amber-400 border border-amber-700/30",
-  ABSENT: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-900/30 text-rose-400 border border-rose-700/30",
+  PRESENT: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200",
+  HALF_DAY: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200",
+  ABSENT: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200",
 };
 
 const leaveStatusBadge: Record<string, string> = {
-  PENDING: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-900/30 text-amber-400 border border-amber-700/30",
-  APPROVED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-900/30 text-emerald-400 border border-emerald-700/30",
-  REJECTED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-900/30 text-rose-400 border border-rose-700/30",
+  PENDING: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200",
+  APPROVED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200",
+  REJECTED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200",
 };
 
 const EmployeeDashboard: React.FC = () => {
@@ -143,7 +143,7 @@ const EmployeeDashboard: React.FC = () => {
     {
       key: "leaveType",
       header: "Type",
-      render: (val) => <span className="capitalize font-medium text-slate-200">{String(val || "PAID")}</span>,
+      render: (val) => <span className="capitalize font-medium text-slate-900">{String(val || "PAID")}</span>,
     },
     {
       key: "startDate",
@@ -158,7 +158,7 @@ const EmployeeDashboard: React.FC = () => {
     {
       key: "remarks",
       header: "Remarks",
-      render: (val) => <span className="text-slate-400 text-xs truncate max-w-xs">{String(val || "—")}</span>,
+      render: (val) => <span className="text-slate-500 text-xs truncate max-w-xs">{String(val || "—")}</span>,
     },
     {
       key: "status",
@@ -174,18 +174,18 @@ const EmployeeDashboard: React.FC = () => {
   const displayName = user?.fullName || user?.firstName || "Employee";
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
       <Navbar />
 
       <main className="ml-64 pt-16 p-6 animate-fade-in">
         {/* Feed message */}
         {feedMessage && (
-          <div className="mb-4 px-4 py-2.5 rounded-lg bg-violet-900/20 border border-violet-700/30 text-violet-300 text-sm flex items-center justify-between">
+          <div className="mb-4 px-4 py-2.5 rounded-lg bg-brand-50 border border-brand-200 text-brand-700 text-sm flex items-center justify-between">
             <span>{feedMessage}</span>
             <button
               onClick={() => setFeedMessage("")}
-              className="text-slate-400 hover:text-slate-200 text-xs ml-4"
+              className="text-brand-500 hover:text-brand-700 text-xs ml-4 font-medium"
             >
               Dismiss
             </button>
@@ -194,17 +194,17 @@ const EmployeeDashboard: React.FC = () => {
 
         {/* Page header */}
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white">{getGreeting(displayName)}</h2>
-          <p className="text-slate-400 text-sm mt-0.5">
+          <h2 className="text-2xl font-bold text-slate-900">{getGreeting(displayName)}</h2>
+          <p className="text-slate-500 text-sm mt-0.5">
             {user?.designation || "Employee"} · {user?.department || "General"} · ID: {user?.employeeId || "—"}
           </p>
         </div>
 
         {/* Today's Attendance Quick Action Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 mb-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">
+              <p className="text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">
                 Today's Attendance
               </p>
               {todayRecord ? (
@@ -213,26 +213,26 @@ const EmployeeDashboard: React.FC = () => {
                     {todayRecord.status}
                   </span>
                   {todayRecord.checkIn && (
-                    <span className="text-slate-300 text-sm flex items-center gap-1">
-                      <LogIn className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="text-slate-700 text-sm flex items-center gap-1">
+                      <LogIn className="w-3.5 h-3.5 text-emerald-500" />
                       In: {formatTime(todayRecord.checkIn)}
                     </span>
                   )}
                   {todayRecord.checkOut && (
-                    <span className="text-slate-300 text-sm flex items-center gap-1">
-                      <LogOut className="w-3.5 h-3.5 text-rose-400" />
+                    <span className="text-slate-700 text-sm flex items-center gap-1">
+                      <LogOut className="w-3.5 h-3.5 text-rose-500" />
                       Out: {formatTime(todayRecord.checkOut)}
                     </span>
                   )}
                   {todayRecord.totalWorkingHours ? (
-                    <span className="text-slate-400 text-xs flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-sky-400" />
+                    <span className="text-slate-500 text-xs flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-sky-500" />
                       {todayRecord.totalWorkingHours} hrs
                     </span>
                   ) : null}
                 </div>
               ) : (
-                <p className="text-slate-400 text-sm">Not checked in yet today</p>
+                <p className="text-slate-500 text-sm">Not checked in yet today</p>
               )}
             </div>
 
@@ -268,7 +268,7 @@ const EmployeeDashboard: React.FC = () => {
           
           {/* QR Scanner Container */}
           {isScanning && (
-            <div className="mt-6 pt-6 border-t border-slate-800">
+            <div className="mt-6 pt-6 border-t border-gray-100">
                <QRScanner 
                  isScanning={isScanning} 
                  setIsScanning={setIsScanning} 
@@ -313,13 +313,13 @@ const EmployeeDashboard: React.FC = () => {
             }
             subtitle="Current month"
             icon={DollarSign}
-            accentColor="violet"
+            accentColor="brand"
           />
         </div>
 
         {/* Recent Leave Requests Table */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-6">
-          <h3 className="text-slate-200 font-semibold mb-4">Recent Leave Requests</h3>
+        <div className="bg-white border border-gray-200 rounded-xl p-5 mb-6 shadow-sm">
+          <h3 className="text-slate-900 font-semibold mb-4">Recent Leave Requests</h3>
           <DataTable
             columns={leaveColumns}
             data={(data?.recentLeaveRequests || []) as unknown as Record<string, unknown>[]}

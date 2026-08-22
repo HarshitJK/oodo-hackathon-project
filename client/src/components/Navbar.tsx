@@ -71,10 +71,10 @@ const Navbar: React.FC = () => {
   const initials = displayName.charAt(0).toUpperCase();
 
   return (
-    <header className="fixed top-0 right-0 left-64 h-16 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-20">
+    <header className="fixed top-0 right-0 left-64 h-16 bg-white/80 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-6 z-20">
       {/* Greeting */}
       <div>
-        <p className="text-slate-200 font-medium text-sm">{getGreeting(displayName)}</p>
+        <p className="text-slate-900 font-medium text-sm">{getGreeting(displayName)}</p>
         <p className="text-slate-500 text-xs">
           {new Date().toLocaleDateString("en-IN", {
             weekday: "long",
@@ -89,11 +89,11 @@ const Navbar: React.FC = () => {
       <div className="flex items-center gap-3">
         {/* Search */}
         <div className="relative hidden sm:flex items-center">
-          <Search className="absolute left-3 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 w-4 h-4 text-slate-400" />
           <input
             type="text"
             placeholder="Search..."
-            className="pl-9 pr-4 py-2 text-sm bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-violet-500 transition-colors w-48 focus:w-64 duration-300"
+            className="pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-500 focus:bg-white transition-all w-48 focus:w-64 duration-300"
           />
         </div>
 
@@ -101,11 +101,11 @@ const Navbar: React.FC = () => {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="relative p-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+            className="relative p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-gray-50 transition-colors"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold text-white bg-violet-600 rounded-full px-1">
+              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold text-white bg-brand-500 rounded-full px-1">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}
@@ -113,19 +113,19 @@ const Navbar: React.FC = () => {
 
           {/* Notifications Popover */}
           {showDropdown && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl overflow-hidden z-50">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800 bg-slate-800/40">
-                <span className="text-sm font-semibold text-white flex items-center gap-2">
-                  <Bell className="w-4 h-4 text-violet-400" /> Notifications
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+                <span className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-brand-500" /> Notifications
                 </span>
                 {unreadCount > 0 && (
-                  <span className="text-xs bg-violet-600/20 text-violet-300 px-2 py-0.5 rounded-full border border-violet-500/30">
+                  <span className="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full border border-brand-200">
                     {unreadCount} unread
                   </span>
                 )}
               </div>
 
-              <div className="max-h-80 overflow-y-auto divide-y divide-slate-800/60">
+              <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
                 {notifications.length === 0 ? (
                   <div className="p-6 text-center text-slate-500 text-sm">
                     No notifications yet
@@ -135,17 +135,17 @@ const Navbar: React.FC = () => {
                     <div
                       key={n._id}
                       className={`p-3.5 transition-colors flex items-start justify-between gap-2 ${
-                        n.isRead ? "bg-transparent opacity-75" : "bg-slate-800/30"
+                        n.isRead ? "bg-white opacity-75" : "bg-brand-50/30"
                       }`}
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 mb-1">
                           {!n.isRead && (
-                            <span className="w-2 h-2 rounded-full bg-violet-500 flex-shrink-0" />
+                            <span className="w-2 h-2 rounded-full bg-brand-500 flex-shrink-0" />
                           )}
-                          <p className="text-xs font-semibold text-slate-200 truncate">{n.title}</p>
+                          <p className="text-xs font-semibold text-slate-900 truncate">{n.title}</p>
                         </div>
-                        <p className="text-xs text-slate-400 break-words leading-relaxed">{n.message}</p>
+                        <p className="text-xs text-slate-600 break-words leading-relaxed">{n.message}</p>
                         <span className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
                           <Clock className="w-3 h-3" /> {formatDate(n.createdAt)}
                         </span>
@@ -154,7 +154,7 @@ const Navbar: React.FC = () => {
                         <button
                           onClick={() => markAsRead(n._id)}
                           title="Mark as read"
-                          className="p-1 text-slate-400 hover:text-emerald-400 rounded transition-colors"
+                          className="p-1 text-slate-400 hover:text-brand-500 rounded transition-colors"
                         >
                           <Check className="w-4 h-4" />
                         </button>
@@ -168,7 +168,7 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* Avatar */}
-        <div className="w-8 h-8 rounded-full bg-violet-600/20 border border-violet-600/40 flex items-center justify-center text-violet-400 text-sm font-semibold cursor-pointer hover:border-violet-500 transition-colors">
+        <div className="w-8 h-8 rounded-full bg-brand-50 border border-brand-200 flex items-center justify-center text-brand-600 text-sm font-semibold cursor-pointer hover:border-brand-400 transition-colors">
           {initials}
         </div>
       </div>

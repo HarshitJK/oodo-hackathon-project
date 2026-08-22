@@ -15,6 +15,13 @@ export default {
           925: "#0d1117",
           950: "#09090f",
         },
+        brand: {
+          50: "#f7f5f7",
+          100: "#e9e3e8",
+          500: "#603F57",
+          600: "#4d3246",
+          700: "#3a2634",
+        }
       },
       animation: {
         "fade-in": "fadeIn 0.3s ease-out",

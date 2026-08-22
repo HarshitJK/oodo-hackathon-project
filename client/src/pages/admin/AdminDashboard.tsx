@@ -105,13 +105,13 @@ const AdminDashboard: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
       <Navbar />
       <main className="ml-64 pt-16 p-6 animate-fade-in">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white">HR & Admin Overview</h2>
-          <p className="text-slate-400 text-sm mt-0.5">
+          <h2 className="text-2xl font-bold text-slate-900">HR & Admin Overview</h2>
+          <p className="text-slate-500 text-sm mt-0.5">
             Real-time workforce health, attendance, and administrative queue
           </p>
         </div>
@@ -123,7 +123,7 @@ const AdminDashboard: React.FC = () => {
             value={isLoading ? "—" : data?.totalEmployees ?? 0}
             subtitle={`${data?.activeEmployees ?? 0} active accounts`}
             icon={Users}
-            accentColor="violet"
+            accentColor="brand"
           />
           <StatCard
             title="Present Today"
@@ -150,14 +150,14 @@ const AdminDashboard: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           {/* Department Breakdown */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
-              <Building className="w-4 h-4 text-violet-400" />
-              <h3 className="text-slate-200 font-semibold">Department Distribution</h3>
+              <Building className="w-4 h-4 text-brand-500" />
+              <h3 className="text-slate-900 font-semibold">Department Distribution</h3>
             </div>
             {isLoading ? (
               <div className="py-8 flex justify-center">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-700 border-t-violet-500" />
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500" />
               </div>
             ) : !data?.departmentDistribution?.length ? (
               <p className="text-slate-500 text-sm py-6 text-center">No department data available</p>
@@ -170,14 +170,14 @@ const AdminDashboard: React.FC = () => {
                   return (
                     <div key={dept.department || "Other"}>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-300 font-medium">{dept.department || "General"}</span>
-                        <span className="text-slate-400">
+                        <span className="text-slate-900 font-medium">{dept.department || "General"}</span>
+                        <span className="text-slate-500">
                           {dept.count} ({pct}%)
                         </span>
                       </div>
-                      <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-violet-500 rounded-full transition-all duration-500"
+                          className="h-full bg-brand-500 rounded-full transition-all duration-500"
                           style={{ width: `${Math.min(100, pct)}%` }}
                         />
                       </div>
@@ -189,11 +189,11 @@ const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Live Activity Feed */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center justify-between gap-2 mb-4">
               <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-violet-400" />
-                <h3 className="text-slate-200 font-semibold">Live Events</h3>
+                <Activity className="w-4 h-4 text-brand-500" />
+                <h3 className="text-slate-900 font-semibold">Live Events</h3>
               </div>
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -209,7 +209,7 @@ const AdminDashboard: React.FC = () => {
                 {liveEvents.map((evt, i) => (
                   <li
                     key={i}
-                    className="text-xs text-slate-300 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-800"
+                    className="text-xs text-slate-700 px-3 py-2 rounded-lg bg-gray-50 border border-gray-100"
                   >
                     {evt}
                   </li>
@@ -219,14 +219,14 @@ const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Audit Log */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
-              <Clock className="w-4 h-4 text-sky-400" />
-              <h3 className="text-slate-200 font-semibold">Recent Audit Log</h3>
+              <Clock className="w-4 h-4 text-sky-500" />
+              <h3 className="text-slate-900 font-semibold">Recent Audit Log</h3>
             </div>
             {isLoading ? (
               <div className="flex justify-center py-8">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-700 border-t-violet-500" />
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500" />
               </div>
             ) : auditLogs.length === 0 ? (
               <p className="text-slate-500 text-xs text-center py-8">No recent audit logs.</p>
@@ -235,10 +235,10 @@ const AdminDashboard: React.FC = () => {
                 {auditLogs.map((log) => (
                   <li
                     key={log._id}
-                    className="flex items-start justify-between gap-2 text-xs border-b border-slate-800/50 pb-2 last:border-0"
+                    className="flex items-start justify-between gap-2 text-xs border-b border-gray-100 pb-2 last:border-0"
                   >
                     <div>
-                      <p className="text-slate-300 font-medium">
+                      <p className="text-slate-900 font-medium">
                         {log.action.replace(/_/g, " ")}
                       </p>
                       <p className="text-slate-500 text-[11px] mt-0.5">
@@ -256,8 +256,8 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Recently Added Employees */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-          <h3 className="text-slate-200 font-semibold mb-4">Recently Onboarded Employees</h3>
+        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+          <h3 className="text-slate-900 font-semibold mb-4">Recently Onboarded Employees</h3>
           {!data?.recentEmployees?.length ? (
             <p className="text-slate-500 text-sm py-4 text-center">No recent employees</p>
           ) : (
@@ -265,16 +265,16 @@ const AdminDashboard: React.FC = () => {
               {data.recentEmployees.map((emp) => (
                 <div
                   key={emp._id}
-                  className="p-3.5 rounded-lg bg-slate-800/40 border border-slate-800 flex flex-col items-start gap-1"
+                  className="p-3.5 rounded-lg bg-gray-50 border border-gray-100 flex flex-col items-start gap-1"
                 >
-                  <div className="w-7 h-7 rounded-full bg-violet-600/20 text-violet-400 flex items-center justify-center text-xs font-bold mb-1">
+                  <div className="w-7 h-7 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-bold mb-1">
                     {emp.firstName?.[0]}
                   </div>
-                  <p className="text-sm font-semibold text-white truncate w-full">
+                  <p className="text-sm font-semibold text-slate-900 truncate w-full">
                     {emp.firstName} {emp.lastName}
                   </p>
-                  <p className="text-xs text-slate-400 truncate w-full">{emp.designation}</p>
-                  <span className="text-[10px] font-mono text-slate-500 mt-1">{emp.employeeId}</span>
+                  <p className="text-xs text-slate-500 truncate w-full">{emp.designation}</p>
+                  <span className="text-[10px] font-mono text-slate-400 mt-1">{emp.employeeId}</span>
                 </div>
               ))}
             </div>

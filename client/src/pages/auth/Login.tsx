@@ -65,22 +65,21 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
-      {/* Background gradient */}
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      {/* Background gradient (removed for cleaner look) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-violet-600/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative w-full max-w-md">
         {/* Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
           {/* Logo */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-12 h-12 rounded-xl bg-violet-600 flex items-center justify-center mb-4 shadow-lg shadow-violet-900/40">
+            <div className="w-12 h-12 rounded-xl bg-brand-500 flex items-center justify-center mb-4 shadow-sm shadow-brand-500/20">
               <Building2 className="w-7 h-7 text-white" />
             </div>
-            <h1 className="text-white text-2xl font-bold">Welcome back</h1>
-            <p className="text-slate-400 text-sm mt-1">Sign in to Dayflow HRMS</p>
+            <h1 className="text-slate-900 text-2xl font-bold">Welcome back</h1>
+            <p className="text-slate-500 text-sm mt-1">Sign in to Dayflow HRMS</p>
           </div>
 
           {/* Server Error */}
@@ -93,7 +92,7 @@ const Login: React.FC = () => {
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             {/* Identifier (Email or Login ID) */}
             <div>
-              <label htmlFor="login-identifier" className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="login-identifier" className="block text-sm font-medium text-slate-700 mb-1.5">
                 Email address or Login ID
               </label>
               <input
@@ -104,7 +103,7 @@ const Login: React.FC = () => {
                 value={form.identifier}
                 onChange={handleChange}
                 placeholder="e.g. john@dayflow.com or JDOE2026"
-                className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/30 transition-all"
+                className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 transition-all"
               />
               {errors.identifier && (
                 <p className="mt-1 text-xs text-rose-400">{errors.identifier}</p>
@@ -114,12 +113,12 @@ const Login: React.FC = () => {
             {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="login-password" className="block text-sm font-medium text-slate-300">
+                <label htmlFor="login-password" className="block text-sm font-medium text-slate-700">
                   Password
                 </label>
                 <Link
                   to="/auth/forgot-password"
-                  className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
+                  className="text-xs text-brand-500 hover:text-brand-600 transition-colors font-medium"
                 >
                   Forgot password?
                 </Link>
@@ -133,12 +132,12 @@ const Login: React.FC = () => {
                   value={form.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full px-4 py-2.5 pr-11 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/30 transition-all"
+                  className="w-full px-4 py-2.5 pr-11 rounded-lg bg-white border border-gray-300 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -154,7 +153,7 @@ const Login: React.FC = () => {
               id="login-submit"
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all duration-150 shadow-lg shadow-violet-900/30 mt-2"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all duration-150 shadow-sm mt-4"
             >
               {isLoading ? (
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
