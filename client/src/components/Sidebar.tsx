@@ -11,14 +11,16 @@ import {
   LogOut,
   ChevronRight,
   Building2,
+  UserCircle,
 } from "lucide-react";
 import { cn } from "../lib/utils";
+import type { UserRole } from "../context/AuthContext";
 
 interface NavItem {
   label: string;
   to: string;
   icon: React.ElementType;
-  roles: Array<"employee" | "manager" | "admin">;
+  roles: UserRole[];
 }
 
 const navItems: NavItem[] = [
@@ -26,55 +28,67 @@ const navItems: NavItem[] = [
     label: "Dashboard",
     to: "/employee/dashboard",
     icon: LayoutDashboard,
-    roles: ["employee", "manager"],
+    roles: ["EMPLOYEE"],
   },
   {
     label: "Admin Dashboard",
     to: "/admin/dashboard",
     icon: LayoutDashboard,
-    roles: ["admin"],
+    roles: ["ADMIN", "HR"],
   },
   {
     label: "My Attendance",
     to: "/employee/attendance",
     icon: CalendarCheck,
-    roles: ["employee", "manager"],
+    roles: ["EMPLOYEE"],
   },
   {
     label: "My Leaves",
     to: "/employee/leaves",
     icon: FileText,
-    roles: ["employee", "manager"],
+    roles: ["EMPLOYEE"],
+  },
+  {
+    label: "My Payroll",
+    to: "/employee/payroll",
+    icon: DollarSign,
+    roles: ["EMPLOYEE"],
   },
   {
     label: "Profile",
     to: "/employee/profile",
-    icon: Users,
-    roles: ["employee", "manager"],
+    icon: UserCircle,
+    roles: ["EMPLOYEE"],
   },
   {
     label: "Employees",
     to: "/admin/employees",
     icon: Users,
-    roles: ["admin"],
+    roles: ["ADMIN", "HR"],
+  },
+  {
+    label: "Attendance",
+    to: "/employee/attendance",
+    icon: CalendarCheck,
+    roles: ["ADMIN", "HR"],
   },
   {
     label: "Leave Approvals",
     to: "/admin/leave-approvals",
     icon: FileText,
-    roles: ["admin", "manager"],
+    roles: ["ADMIN", "HR"],
   },
   {
     label: "Payroll",
     to: "/admin/payroll",
     icon: DollarSign,
-    roles: ["admin"],
+    roles: ["ADMIN", "HR"],
   },
   {
     label: "Analytics",
     to: "/admin/analytics",
     icon: BarChart3,
-    roles: ["admin"],
+    roles: ["ADMIN", "HR"],
   },
 ];
 
@@ -91,6 +105,9 @@ const Sidebar: React.FC = () => {
     await logout();
     navigate("/auth/login");
   };
+
+  const displayName = user?.fullName || user?.firstName || "User";
+  const initials = displayName.charAt(0).toUpperCase();
 
   return (
     <aside className="fixed inset-y-0 left-0 w-64 flex flex-col bg-slate-900 border-r border-slate-800 z-30">
@@ -109,11 +126,11 @@ const Sidebar: React.FC = () => {
       <div className="px-4 py-4 border-b border-slate-800">
         <div className="flex items-center gap-3 px-2 py-2 rounded-lg bg-slate-800/50">
           <div className="w-8 h-8 rounded-full bg-violet-600/20 border border-violet-600/40 flex items-center justify-center text-violet-400 text-sm font-semibold">
-            {user?.name?.charAt(0).toUpperCase()}
+            {initials}
           </div>
           <div className="min-w-0">
-            <p className="text-white text-sm font-medium truncate">{user?.name}</p>
-            <p className="text-slate-400 text-xs capitalize">{user?.role}</p>
+            <p className="text-white text-sm font-medium truncate">{displayName}</p>
+            <p className="text-slate-400 text-xs capitalize">{role?.toLowerCase()}</p>
           </div>
         </div>
       </div>
@@ -125,7 +142,7 @@ const Sidebar: React.FC = () => {
             const isActive = location.pathname === item.to;
             const Icon = item.icon;
             return (
-              <li key={item.to}>
+              <li key={item.to + item.label}>
                 <Link
                   to={item.to}
                   className={cn(

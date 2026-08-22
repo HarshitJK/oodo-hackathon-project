@@ -1,16 +1,80 @@
-import React from "react";
-import { Bell, Search } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Bell, Search, Check, Info, Clock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { getGreeting } from "../lib/utils";
+import { getGreeting, formatDate } from "../lib/utils";
+import api from "../api";
+import { useSocket } from "../hooks/useSocket";
+
+interface NotificationItem {
+  _id: string;
+  title: string;
+  message: string;
+  type: string;
+  isRead: boolean;
+  createdAt: string;
+}
 
 const Navbar: React.FC = () => {
   const { user } = useAuth();
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const fetchNotifications = async () => {
+    try {
+      const { data } = await api.get("/notifications?limit=10");
+      if (data?.data) {
+        setNotifications(data.data.notifications || []);
+        setUnreadCount(data.data.pagination?.unreadCount || 0);
+      }
+    } catch {
+      // Ignore background notification fetch errors
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  useSocket({
+    "notification:new": (newNotif) => {
+      setNotifications((prev) => [newNotif as NotificationItem, ...prev]);
+      setUnreadCount((prev) => prev + 1);
+    },
+  });
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const markAsRead = async (id: string) => {
+    try {
+      await api.patch(`/notifications/${id}/read`);
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    } catch {
+      // Ignore
+    }
+  };
+
+  const displayName = user?.fullName || user?.firstName || "User";
+  const initials = displayName.charAt(0).toUpperCase();
 
   return (
     <header className="fixed top-0 right-0 left-64 h-16 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-20">
       {/* Greeting */}
       <div>
-        <p className="text-slate-200 font-medium text-sm">{getGreeting(user?.name)}</p>
+        <p className="text-slate-200 font-medium text-sm">{getGreeting(displayName)}</p>
         <p className="text-slate-500 text-xs">
           {new Date().toLocaleDateString("en-IN", {
             weekday: "long",
@@ -34,15 +98,78 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* Notification bell */}
-        <button className="relative p-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors">
-          <Bell className="w-5 h-5" />
-          {/* Notification dot */}
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-violet-500 rounded-full ring-2 ring-slate-950" />
-        </button>
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="relative p-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+          >
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold text-white bg-violet-600 rounded-full px-1">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {/* Notifications Popover */}
+          {showDropdown && (
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl overflow-hidden z-50">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800 bg-slate-800/40">
+                <span className="text-sm font-semibold text-white flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-violet-400" /> Notifications
+                </span>
+                {unreadCount > 0 && (
+                  <span className="text-xs bg-violet-600/20 text-violet-300 px-2 py-0.5 rounded-full border border-violet-500/30">
+                    {unreadCount} unread
+                  </span>
+                )}
+              </div>
+
+              <div className="max-h-80 overflow-y-auto divide-y divide-slate-800/60">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center text-slate-500 text-sm">
+                    No notifications yet
+                  </div>
+                ) : (
+                  notifications.map((n) => (
+                    <div
+                      key={n._id}
+                      className={`p-3.5 transition-colors flex items-start justify-between gap-2 ${
+                        n.isRead ? "bg-transparent opacity-75" : "bg-slate-800/30"
+                      }`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          {!n.isRead && (
+                            <span className="w-2 h-2 rounded-full bg-violet-500 flex-shrink-0" />
+                          )}
+                          <p className="text-xs font-semibold text-slate-200 truncate">{n.title}</p>
+                        </div>
+                        <p className="text-xs text-slate-400 break-words leading-relaxed">{n.message}</p>
+                        <span className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> {formatDate(n.createdAt)}
+                        </span>
+                      </div>
+                      {!n.isRead && (
+                        <button
+                          onClick={() => markAsRead(n._id)}
+                          title="Mark as read"
+                          className="p-1 text-slate-400 hover:text-emerald-400 rounded transition-colors"
+                        >
+                          <Check className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Avatar */}
         <div className="w-8 h-8 rounded-full bg-violet-600/20 border border-violet-600/40 flex items-center justify-center text-violet-400 text-sm font-semibold cursor-pointer hover:border-violet-500 transition-colors">
-          {user?.name?.charAt(0).toUpperCase()}
+          {initials}
         </div>
       </div>
     </header>
@@ -50,3 +177,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+

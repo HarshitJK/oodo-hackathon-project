@@ -9,7 +9,7 @@ const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState<LoginFormData>({ email: "", password: "" });
+  const [form, setForm] = useState<LoginFormData>({ identifier: "", password: "" });
   const [errors, setErrors] = useState<Partial<LoginFormData>>({});
   const [serverError, setServerError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +26,6 @@ const Login: React.FC = () => {
     setErrors({});
     setServerError("");
 
-    // Client-side validation
     const result = loginSchema.safeParse(form);
     if (!result.success) {
       const fieldErrors: Partial<LoginFormData> = {};
@@ -40,12 +39,25 @@ const Login: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await login(form.email, form.password);
+      await login(form.identifier, form.password);
+      // Determine redirection based on the stored user data or reload state
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          if (payload?.role === "ADMIN" || payload?.role === "HR") {
+            navigate("/admin/dashboard");
+            return;
+          }
+        } catch {
+          // fallback
+        }
+      }
       navigate("/employee/dashboard");
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        "Login failed. Please try again.";
+        "Login failed. Please check your credentials.";
       setServerError(msg);
     } finally {
       setIsLoading(false);
@@ -79,31 +91,39 @@ const Login: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
-            {/* Email */}
+            {/* Identifier (Email or Login ID) */}
             <div>
-              <label htmlFor="login-email" className="block text-sm font-medium text-slate-300 mb-1.5">
-                Email address
+              <label htmlFor="login-identifier" className="block text-sm font-medium text-slate-300 mb-1.5">
+                Email address or Login ID
               </label>
               <input
-                id="login-email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                value={form.email}
+                id="login-identifier"
+                name="identifier"
+                type="text"
+                autoComplete="username"
+                value={form.identifier}
                 onChange={handleChange}
-                placeholder="you@company.com"
+                placeholder="e.g. john@dayflow.com or JDOE2026"
                 className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/30 transition-all"
               />
-              {errors.email && (
-                <p className="mt-1 text-xs text-rose-400">{errors.email}</p>
+              {errors.identifier && (
+                <p className="mt-1 text-xs text-rose-400">{errors.identifier}</p>
               )}
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="login-password" className="block text-sm font-medium text-slate-300 mb-1.5">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="login-password" className="block text-sm font-medium text-slate-300">
+                  Password
+                </label>
+                <Link
+                  to="/auth/forgot-password"
+                  className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <input
                   id="login-password"
@@ -145,11 +165,8 @@ const Login: React.FC = () => {
             </button>
           </form>
 
-          <p className="text-center text-sm text-slate-500 mt-6">
-            Don't have an account?{" "}
-            <Link to="/auth/signup" className="text-violet-400 hover:text-violet-300 font-medium transition-colors">
-              Sign up
-            </Link>
+          <p className="text-center text-xs text-slate-500 mt-6">
+            New employee? Contact your HR Administrator to receive your account credentials.
           </p>
         </div>
       </div>
@@ -158,3 +175,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+

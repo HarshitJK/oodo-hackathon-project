@@ -10,51 +10,91 @@ import {
   FileText,
   Activity,
   Clock,
+  UserCheck,
+  Building,
 } from "lucide-react";
 import { formatDate } from "../../lib/utils";
 
-interface DashboardStats {
+interface DepartmentStat {
+  department: string;
+  count: number;
+}
+
+interface RecentEmployee {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  employeeId: string;
+  email: string;
+  department: string;
+  designation: string;
+  createdAt: string;
+}
+
+interface AdminDashboardData {
   totalEmployees: number;
-  pendingLeaves: number;
-  todayAttendanceCount: number;
+  activeEmployees: number;
+  presentToday: number;
+  halfDayToday: number;
+  absentToday: number;
+  pendingLeaveRequests: number;
+  departmentDistribution: DepartmentStat[];
+  recentEmployees: RecentEmployee[];
 }
 
 interface AuditEntry {
   _id: string;
   action: string;
+  module: string;
   timestamp: string;
-  actorId: { name: string; employeeId: string } | null;
+  actor?: { firstName: string; lastName: string; employeeId: string };
 }
 
 const AdminDashboard: React.FC = () => {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [recentActivity, setRecentActivity] = useState<AuditEntry[]>([]);
+  const [data, setData] = useState<AdminDashboardData | null>(null);
+  const [auditLogs, setAuditLogs] = useState<AuditEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [liveEvents, setLiveEvents] = useState<string[]>([]);
 
   useSocket({
-    "attendance:new": (data) => {
-      const payload = data as { type: string; userId: string };
+    "attendance:update": (payload) => {
+      const p = payload as { action: string; employeeId: string };
       setLiveEvents((prev) => [
-        `🟢 Attendance ${payload.type} — user ${payload.userId.slice(-6)}`,
-        ...prev.slice(0, 4),
+        `🟢 Attendance ${p.action || "updated"} for employee ${p.employeeId?.slice(-6)}`,
+        ...prev.slice(0, 5),
       ]);
     },
-    "leave:new": (data) => {
-      const payload = data as { leaveRequest: { type: string } };
+    "leave:new": (payload) => {
+      const p = payload as { leave?: { leaveType: string } };
       setLiveEvents((prev) => [
-        `📄 New ${payload.leaveRequest.type} leave request submitted`,
-        ...prev.slice(0, 4),
+        `📄 New ${p?.leave?.leaveType || ""} leave request submitted`,
+        ...prev.slice(0, 5),
+      ]);
+    },
+    "leave:update": (payload) => {
+      const p = payload as { action: string };
+      setLiveEvents((prev) => [
+        `⚖️ Leave decision: ${p.action}`,
+        ...prev.slice(0, 5),
       ]);
     },
   });
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
-        const { data } = await api.get("/admin/stats");
-        setStats(data.data.stats);
-        setRecentActivity(data.data.recentActivity);
+        const [dashRes, auditRes] = await Promise.allSettled([
+          api.get("/dashboard/admin"),
+          api.get("/audit?limit=6"),
+        ]);
+
+        if (dashRes.status === "fulfilled" && dashRes.value.data?.data) {
+          setData(dashRes.value.data.data);
+        }
+        if (auditRes.status === "fulfilled" && auditRes.value.data?.data) {
+          setAuditLogs(auditRes.value.data.data.logs || []);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -64,71 +104,113 @@ const AdminDashboard: React.FC = () => {
     fetchData();
   }, []);
 
-  const actionLabel: Record<string, string> = {
-    USER_SIGNED_UP: "New signup",
-    USER_LOGGED_IN: "User logged in",
-    LEAVE_REQUEST_CREATED: "Leave request created",
-    LEAVE_APPROVED: "Leave approved",
-    LEAVE_REJECTED: "Leave rejected",
-    ATTENDANCE_CHECKED_IN: "Checked in",
-    ATTENDANCE_CHECKED_OUT: "Checked out",
-    EMPLOYEE_UPDATED: "Profile updated",
-  };
-
   return (
     <div className="min-h-screen bg-slate-950">
       <Sidebar />
       <Navbar />
       <main className="ml-64 pt-16 p-6 animate-fade-in">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white">Admin Dashboard</h2>
-          <p className="text-slate-400 text-sm mt-0.5">System overview — {new Date().toLocaleDateString("en-IN", { dateStyle: "long" })}</p>
+          <h2 className="text-2xl font-bold text-white">HR & Admin Overview</h2>
+          <p className="text-slate-400 text-sm mt-0.5">
+            Real-time workforce health, attendance, and administrative queue
+          </p>
         </div>
 
-        {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        {/* Primary Stat Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <StatCard
-            title="Total Employees"
-            value={isLoading ? "—" : stats?.totalEmployees ?? 0}
-            subtitle="Active accounts"
+            title="Total Workforce"
+            value={isLoading ? "—" : data?.totalEmployees ?? 0}
+            subtitle={`${data?.activeEmployees ?? 0} active accounts`}
             icon={Users}
             accentColor="violet"
           />
           <StatCard
-            title="Today's Present"
-            value={isLoading ? "—" : stats?.todayAttendanceCount ?? 0}
-            subtitle="Checked in today"
+            title="Present Today"
+            value={isLoading ? "—" : data?.presentToday ?? 0}
+            subtitle={`${data?.halfDayToday ?? 0} half day`}
             icon={CalendarCheck}
             accentColor="emerald"
           />
           <StatCard
+            title="Absent Today"
+            value={isLoading ? "—" : data?.absentToday ?? 0}
+            subtitle="Not checked in"
+            icon={UserCheck}
+            accentColor="rose"
+          />
+          <StatCard
             title="Pending Leaves"
-            value={isLoading ? "—" : stats?.pendingLeaves ?? 0}
-            subtitle="Awaiting approval"
+            value={isLoading ? "—" : data?.pendingLeaveRequests ?? 0}
+            subtitle="Requires manager action"
             icon={FileText}
             accentColor="amber"
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Live Events Feed */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          {/* Department Breakdown */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
-              <Activity className="w-4 h-4 text-violet-400" />
-              <h3 className="text-slate-200 font-semibold">Live Activity</h3>
-              <span className="ml-auto flex items-center gap-1.5">
+              <Building className="w-4 h-4 text-violet-400" />
+              <h3 className="text-slate-200 font-semibold">Department Distribution</h3>
+            </div>
+            {isLoading ? (
+              <div className="py-8 flex justify-center">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-700 border-t-violet-500" />
+              </div>
+            ) : !data?.departmentDistribution?.length ? (
+              <p className="text-slate-500 text-sm py-6 text-center">No department data available</p>
+            ) : (
+              <div className="space-y-3">
+                {data.departmentDistribution.map((dept) => {
+                  const pct = Math.round(
+                    ((dept.count || 0) / (data.activeEmployees || 1)) * 100
+                  );
+                  return (
+                    <div key={dept.department || "Other"}>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-slate-300 font-medium">{dept.department || "General"}</span>
+                        <span className="text-slate-400">
+                          {dept.count} ({pct}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-violet-500 rounded-full transition-all duration-500"
+                          style={{ width: `${Math.min(100, pct)}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Live Activity Feed */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <div className="flex items-center justify-between gap-2 mb-4">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-violet-400" />
+                <h3 className="text-slate-200 font-semibold">Live Events</h3>
+              </div>
+              <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs text-emerald-400">Socket connected</span>
+                <span className="text-xs text-emerald-400 font-medium">Socket Live</span>
               </span>
             </div>
             {liveEvents.length === 0 ? (
-              <p className="text-slate-500 text-sm text-center py-6">
-                Waiting for real-time events…
-              </p>
+              <div className="py-12 text-center text-slate-500 text-xs">
+                Listening for attendance check-ins and leave requests in real-time...
+              </div>
             ) : (
               <ul className="space-y-2">
                 {liveEvents.map((evt, i) => (
-                  <li key={i} className="text-sm text-slate-300 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-800 animate-slide-up">
+                  <li
+                    key={i}
+                    className="text-xs text-slate-300 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-800"
+                  >
                     {evt}
                   </li>
                 ))}
@@ -136,29 +218,34 @@ const AdminDashboard: React.FC = () => {
             )}
           </div>
 
-          {/* Recent Audit Log */}
+          {/* Audit Log */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
               <Clock className="w-4 h-4 text-sky-400" />
-              <h3 className="text-slate-200 font-semibold">Recent Activity Log</h3>
+              <h3 className="text-slate-200 font-semibold">Recent Audit Log</h3>
             </div>
             {isLoading ? (
-              <div className="flex justify-center py-6">
+              <div className="flex justify-center py-8">
                 <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-700 border-t-violet-500" />
               </div>
-            ) : recentActivity.length === 0 ? (
-              <p className="text-slate-500 text-sm text-center py-6">No recent activity.</p>
+            ) : auditLogs.length === 0 ? (
+              <p className="text-slate-500 text-xs text-center py-8">No recent audit logs.</p>
             ) : (
-              <ul className="space-y-2">
-                {recentActivity.map((log) => (
-                  <li key={log._id} className="flex items-start justify-between gap-3 px-3 py-2 rounded-lg hover:bg-slate-800/40 transition-colors">
+              <ul className="space-y-2.5">
+                {auditLogs.map((log) => (
+                  <li
+                    key={log._id}
+                    className="flex items-start justify-between gap-2 text-xs border-b border-slate-800/50 pb-2 last:border-0"
+                  >
                     <div>
-                      <p className="text-slate-300 text-sm">{actionLabel[log.action] ?? log.action}</p>
-                      <p className="text-slate-500 text-xs mt-0.5">
-                        by {log.actorId?.name ?? "Unknown"} · {log.actorId?.employeeId ?? ""}
+                      <p className="text-slate-300 font-medium">
+                        {log.action.replace(/_/g, " ")}
+                      </p>
+                      <p className="text-slate-500 text-[11px] mt-0.5">
+                        by {log.actor ? `${log.actor.firstName} ${log.actor.lastName}` : "System"}
                       </p>
                     </div>
-                    <span className="text-slate-600 text-xs whitespace-nowrap">
+                    <span className="text-slate-500 text-[10px] whitespace-nowrap">
                       {formatDate(log.timestamp)}
                     </span>
                   </li>
@@ -166,6 +253,32 @@ const AdminDashboard: React.FC = () => {
               </ul>
             )}
           </div>
+        </div>
+
+        {/* Recently Added Employees */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <h3 className="text-slate-200 font-semibold mb-4">Recently Onboarded Employees</h3>
+          {!data?.recentEmployees?.length ? (
+            <p className="text-slate-500 text-sm py-4 text-center">No recent employees</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              {data.recentEmployees.map((emp) => (
+                <div
+                  key={emp._id}
+                  className="p-3.5 rounded-lg bg-slate-800/40 border border-slate-800 flex flex-col items-start gap-1"
+                >
+                  <div className="w-7 h-7 rounded-full bg-violet-600/20 text-violet-400 flex items-center justify-center text-xs font-bold mb-1">
+                    {emp.firstName?.[0]}
+                  </div>
+                  <p className="text-sm font-semibold text-white truncate w-full">
+                    {emp.firstName} {emp.lastName}
+                  </p>
+                  <p className="text-xs text-slate-400 truncate w-full">{emp.designation}</p>
+                  <span className="text-[10px] font-mono text-slate-500 mt-1">{emp.employeeId}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>

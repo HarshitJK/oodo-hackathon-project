@@ -1,28 +1,33 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
-import DataTable from "../../components/DataTable";
-import type { Column } from "../../components/DataTable";
+import DataTable, { type Column } from "../../components/DataTable";
 import api from "../../api";
-import { Users, Search } from "lucide-react";
+import { Users, Search, Plus, X, UserMinus, Check, Copy } from "lucide-react";
 import { formatDate } from "../../lib/utils";
+import { createEmployeeSchema } from "../../lib/validation";
+import type { CreateEmployeeFormData } from "../../lib/validation";
 
 interface Employee {
   _id: string;
   employeeId: string;
-  name: string;
+  loginId: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  role: string;
+  phone: string;
+  role: "ADMIN" | "HR" | "EMPLOYEE";
   department: string;
-  jobTitle: string;
-  isEmailVerified: boolean;
+  designation: string;
+  status: "ACTIVE" | "INACTIVE";
+  joiningDate: string;
   createdAt: string;
 }
 
 const roleBadge: Record<string, string> = {
-  admin: "px-2 py-0.5 rounded-full text-xs font-semibold bg-violet-900/30 text-violet-400 border border-violet-700/30",
-  manager: "px-2 py-0.5 rounded-full text-xs font-semibold bg-sky-900/30 text-sky-400 border border-sky-700/30",
-  employee: "px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700",
+  ADMIN: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-violet-900/30 text-violet-400 border border-violet-700/30",
+  HR: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-900/30 text-sky-400 border border-sky-700/30",
+  EMPLOYEE: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700",
 };
 
 const EmployeeList: React.FC = () => {
@@ -30,18 +35,50 @@ const EmployeeList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  // Add Employee Modal state
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newEmpForm, setNewEmpForm] = useState<CreateEmployeeFormData>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    gender: undefined,
+    department: "",
+    designation: "",
+    joiningDate: new Date().toISOString().slice(0, 10),
+    role: "EMPLOYEE",
+    basicSalary: 30000,
+    hra: 10000,
+    specialAllowance: 5000,
+  });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createdResult, setCreatedResult] = useState<{
+    user: Employee;
+    tempPassword?: string;
+  } | null>(null);
+  const [serverError, setServerError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const fetchEmployees = async () => {
     setIsLoading(true);
     try {
-      const params = new URLSearchParams({ page: String(page), limit: "20" });
+      const params = new URLSearchParams();
+      params.set("page", String(page));
+      params.set("limit", "20");
       if (search) params.set("search", search);
       if (roleFilter) params.set("role", roleFilter);
-      const { data } = await api.get(`/employees?${params.toString()}`);
-      setEmployees(data.data.employees);
-      setTotalPages(data.data.pagination.pages);
+      if (statusFilter) params.set("status", statusFilter);
+
+      const { data } = await api.get(`/users?${params.toString()}`);
+      if (data?.data) {
+        setEmployees(data.data.employees || []);
+        setTotalPages(data.data.pagination?.pages || 1);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -51,39 +88,145 @@ const EmployeeList: React.FC = () => {
 
   useEffect(() => {
     fetchEmployees();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPage(1);
+    fetchEmployees();
+  };
+
+  const handleDeactivate = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to deactivate ${name}'s account?`)) return;
+    try {
+      await api.delete(`/users/${id}`);
+      fetchEmployees();
+    } catch (err: unknown) {
+      alert(
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          "Failed to deactivate."
+      );
+    }
+  };
+
+  const handleAddEmployee = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormErrors({});
+    setServerError("");
+
+    const result = createEmployeeSchema.safeParse(newEmpForm);
+    if (!result.success) {
+      const errs: Record<string, string> = {};
+      result.error.issues.forEach((err) => {
+        errs[err.path[0] as string] = err.message;
+      });
+      setFormErrors(errs);
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { data } = await api.post("/users", newEmpForm);
+      setCreatedResult(data.data);
+      fetchEmployees();
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to create employee.";
+      setServerError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const copyCredentials = () => {
+    if (!createdResult) return;
+    const text = `Dayflow Login Credentials:\nLogin ID: ${createdResult.user.loginId}\nEmail: ${createdResult.user.email}\nTemporary Password: ${createdResult.tempPassword}`;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+  };
+
   const columns: Column<Record<string, unknown>>[] = [
-    { key: "employeeId", header: "ID", sortable: true },
-    { key: "name", header: "Name", sortable: true },
     {
-      key: "email",
-      header: "Email",
-      render: (val) => <span className="text-slate-400 text-sm">{val as string}</span>,
+      key: "employeeId",
+      header: "Employee ID",
+      sortable: true,
+      render: (val) => <span className="font-mono text-xs text-slate-300 font-semibold">{String(val)}</span>,
+    },
+    {
+      key: "loginId",
+      header: "Login ID",
+      render: (val) => <span className="font-mono text-xs text-violet-400 font-medium">{String(val || "—")}</span>,
+    },
+    {
+      key: "name",
+      header: "Employee Name",
+      render: (_, row) => {
+        const emp = row as unknown as Employee;
+        return (
+          <div>
+            <p className="text-white font-medium text-sm">
+              {emp.firstName} {emp.lastName}
+            </p>
+            <p className="text-slate-500 text-xs">{emp.email}</p>
+          </div>
+        );
+      },
     },
     {
       key: "role",
       header: "Role",
       sortable: true,
-      render: (val) => <span className={roleBadge[val as string] ?? "text-slate-400"}>{val as string}</span>,
+      render: (val) => <span className={roleBadge[val as string] || "text-slate-400"}>{String(val)}</span>,
     },
-    { key: "department", header: "Department", sortable: true, render: (val) => (val as string) || "—" },
-    { key: "jobTitle", header: "Job Title", render: (val) => (val as string) || "—" },
     {
-      key: "isEmailVerified",
-      header: "Verified",
+      key: "department",
+      header: "Department",
+      sortable: true,
+      render: (val) => <span className="text-slate-300 text-xs">{(val as string) || "—"}</span>,
+    },
+    {
+      key: "designation",
+      header: "Designation",
+      render: (val) => <span className="text-slate-300 text-xs">{(val as string) || "—"}</span>,
+    },
+    {
+      key: "status",
+      header: "Status",
       render: (val) => (
-        <span className={val ? "text-emerald-400" : "text-rose-400"}>
-          {val ? "✓ Yes" : "✗ No"}
+        <span
+          className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+            val === "ACTIVE"
+              ? "bg-emerald-900/30 text-emerald-400 border border-emerald-700/30"
+              : "bg-rose-900/30 text-rose-400 border border-rose-700/30"
+          }`}
+        >
+          {String(val)}
         </span>
       ),
     },
     {
-      key: "createdAt",
+      key: "joiningDate",
       header: "Joined",
       sortable: true,
-      render: (val) => formatDate(val as string),
+      render: (val) => (val ? formatDate(val as string) : "—"),
+    },
+    {
+      key: "_id",
+      header: "Action",
+      render: (val, row) => {
+        const emp = row as unknown as Employee;
+        return emp.status === "ACTIVE" ? (
+          <button
+            onClick={() => handleDeactivate(val as string, `${emp.firstName} ${emp.lastName}`)}
+            title="Deactivate Employee"
+            className="p-1 text-slate-500 hover:text-rose-400 transition-colors rounded"
+          >
+            <UserMinus className="w-4 h-4" />
+          </button>
+        ) : null;
+      },
     },
   ];
 
@@ -99,51 +242,78 @@ const EmployeeList: React.FC = () => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">Employee Directory</h2>
-              <p className="text-slate-400 text-sm">Manage all employees in the system</p>
+              <p className="text-slate-400 text-sm">Create, manage, and onboard workforce accounts</p>
             </div>
           </div>
+
+          <button
+            onClick={() => {
+              setCreatedResult(null);
+              setShowAddModal(true);
+            }}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-violet-900/20"
+          >
+            <Plus className="w-4 h-4" /> Add Employee
+          </button>
         </div>
 
-        {/* Filters */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-5 flex flex-wrap gap-3 items-end">
-          <div className="relative flex-1 min-w-[200px]">
+        {/* Search & Filters */}
+        <form
+          onSubmit={handleSearchSubmit}
+          className="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-5 flex flex-wrap gap-3 items-end"
+        >
+          <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
             <input
               id="emp-search"
               type="text"
-              placeholder="Search by name, email, employee ID..."
+              placeholder="Search by name, email, Employee ID, Login ID..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+              className="w-full pl-9 pr-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
             />
           </div>
+
           <div>
             <select
               id="emp-role-filter"
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+              className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
             >
               <option value="">All Roles</option>
-              <option value="employee">Employee</option>
-              <option value="manager">Manager</option>
-              <option value="admin">Admin</option>
+              <option value="EMPLOYEE">Employee</option>
+              <option value="HR">HR Manager</option>
+              <option value="ADMIN">Administrator</option>
             </select>
           </div>
+
+          <div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+            >
+              <option value="">All Statuses</option>
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+            </select>
+          </div>
+
           <button
             id="emp-filter-apply"
-            onClick={() => { setPage(1); fetchEmployees(); }}
-            className="px-4 py-2.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors"
+            type="submit"
+            className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors"
           >
-            Search
+            Filter
           </button>
-        </div>
+        </form>
 
         <DataTable
           columns={columns}
           data={employees as unknown as Record<string, unknown>[]}
           isLoading={isLoading}
-          emptyMessage="No employees found."
+          emptyMessage="No employees found matching the filters."
         />
 
         {/* Pagination */}
@@ -154,16 +324,220 @@ const EmployeeList: React.FC = () => {
               onClick={() => setPage((p) => p - 1)}
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 text-sm transition-colors"
             >
-              ← Previous
+              Previous
             </button>
-            <span className="text-slate-400 text-sm">Page {page} of {totalPages}</span>
+            <span className="text-slate-400 text-sm">
+              Page {page} of {totalPages}
+            </span>
             <button
               disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 text-sm transition-colors"
             >
-              Next →
+              Next
             </button>
+          </div>
+        )}
+
+        {/* Add Employee Modal */}
+        {showAddModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-xl shadow-2xl animate-slide-up my-8">
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="text-white font-semibold text-lg">
+                  {createdResult ? "Employee Account Created!" : "Add New Employee"}
+                </h3>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="text-slate-500 hover:text-slate-300 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {createdResult ? (
+                <div className="space-y-4">
+                  <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-800/50 space-y-2">
+                    <p className="text-emerald-400 font-semibold text-sm">
+                      Employee account generated successfully:
+                    </p>
+                    <div className="text-xs space-y-1 font-mono text-slate-300">
+                      <p>
+                        <strong className="text-white">Name:</strong> {createdResult.user.firstName}{" "}
+                        {createdResult.user.lastName}
+                      </p>
+                      <p>
+                        <strong className="text-white">Employee ID:</strong>{" "}
+                        <span className="text-violet-400 font-bold">{createdResult.user.employeeId}</span>
+                      </p>
+                      <p>
+                        <strong className="text-white">Login ID:</strong>{" "}
+                        <span className="text-violet-400 font-bold">{createdResult.user.loginId}</span>
+                      </p>
+                      <p>
+                        <strong className="text-white">Email:</strong> {createdResult.user.email}
+                      </p>
+                      <p>
+                        <strong className="text-white">Temporary Password:</strong>{" "}
+                        <span className="bg-slate-800 px-2 py-0.5 rounded text-amber-300 font-bold">
+                          {createdResult.tempPassword}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={copyCredentials}
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors"
+                    >
+                      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      {copied ? "Copied!" : "Copy Credentials"}
+                    </button>
+                    <button
+                      onClick={() => setShowAddModal(false)}
+                      className="flex-1 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleAddEmployee} className="space-y-4">
+                  {serverError && (
+                    <div className="px-3 py-2 rounded-lg bg-rose-900/20 border border-rose-700/30 text-rose-400 text-xs">
+                      {serverError}
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">First Name *</label>
+                      <input
+                        type="text"
+                        value={newEmpForm.firstName}
+                        onChange={(e) => setNewEmpForm((p) => ({ ...p, firstName: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      />
+                      {formErrors.firstName && <p className="text-rose-400 text-xs mt-0.5">{formErrors.firstName}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">Last Name *</label>
+                      <input
+                        type="text"
+                        value={newEmpForm.lastName}
+                        onChange={(e) => setNewEmpForm((p) => ({ ...p, lastName: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      />
+                      {formErrors.lastName && <p className="text-rose-400 text-xs mt-0.5">{formErrors.lastName}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">Work Email *</label>
+                      <input
+                        type="email"
+                        value={newEmpForm.email}
+                        onChange={(e) => setNewEmpForm((p) => ({ ...p, email: e.target.value }))}
+                        placeholder="john@company.com"
+                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      />
+                      {formErrors.email && <p className="text-rose-400 text-xs mt-0.5">{formErrors.email}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">Phone Number</label>
+                      <input
+                        type="tel"
+                        value={newEmpForm.phone}
+                        onChange={(e) => setNewEmpForm((p) => ({ ...p, phone: e.target.value }))}
+                        placeholder="+91..."
+                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">Department *</label>
+                      <input
+                        type="text"
+                        value={newEmpForm.department}
+                        onChange={(e) => setNewEmpForm((p) => ({ ...p, department: e.target.value }))}
+                        placeholder="Engineering"
+                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      />
+                      {formErrors.department && <p className="text-rose-400 text-xs mt-0.5">{formErrors.department}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">Designation *</label>
+                      <input
+                        type="text"
+                        value={newEmpForm.designation}
+                        onChange={(e) => setNewEmpForm((p) => ({ ...p, designation: e.target.value }))}
+                        placeholder="Software Engineer"
+                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      />
+                      {formErrors.designation && <p className="text-rose-400 text-xs mt-0.5">{formErrors.designation}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">Role *</label>
+                      <select
+                        value={newEmpForm.role}
+                        onChange={(e) => setNewEmpForm((p) => ({ ...p, role: e.target.value as "ADMIN" | "HR" | "EMPLOYEE" }))}
+                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      >
+                        <option value="EMPLOYEE">Employee</option>
+                        <option value="HR">HR Manager</option>
+                        <option value="ADMIN">Administrator</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">Joining Date *</label>
+                      <input
+                        type="date"
+                        value={newEmpForm.joiningDate}
+                        onChange={(e) => setNewEmpForm((p) => ({ ...p, joiningDate: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      />
+                      {formErrors.joiningDate && <p className="text-rose-400 text-xs mt-0.5">{formErrors.joiningDate}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">Basic Salary (₹)</label>
+                      <input
+                        type="number"
+                        value={newEmpForm.basicSalary}
+                        onChange={(e) => setNewEmpForm((p) => ({ ...p, basicSalary: Number(e.target.value) }))}
+                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 pt-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddModal(false)}
+                      className="flex-1 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
+                    >
+                      {isSubmitting ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      ) : null}
+                      {isSubmitting ? "Creating..." : "Create Account"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
           </div>
         )}
       </main>
