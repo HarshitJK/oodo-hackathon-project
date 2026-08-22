@@ -12,7 +12,7 @@ interface StatCardProps {
     label: string;
     direction: "up" | "down" | "neutral";
   };
-  accentColor?: "brand" | "emerald" | "amber" | "rose" | "sky";
+  accentColor?: "brand" | "emerald" | "amber" | "rose" | "sky" | "violet";
   className?: string;
   children?: ReactNode;
 }
@@ -47,6 +47,12 @@ const colorMap = {
     border: "border-sky-100",
     icon: "text-sky-600",
     glow: "shadow-sky-500/5",
+  },
+  violet: {
+    bg: "bg-violet-500/10",
+    border: "border-violet-500/20",
+    icon: "text-violet-400",
+    glow: "shadow-violet-900/10",
   },
 };
 
