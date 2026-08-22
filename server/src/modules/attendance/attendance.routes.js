@@ -10,12 +10,13 @@ const router = express.Router();
 router.use(verifyToken);
 
 // Employee routes
-router.post("/check-in", validate(checkInSchema), attendanceController.checkIn);
+router.post("/check-in", validate(checkInSchema), attendanceController.checkInQR);
 router.post("/check-out", validate(checkOutSchema), attendanceController.checkOut);
 router.get("/me", attendanceController.getMyAttendance);
 router.get("/today", attendanceController.getTodayAttendance);
 
 // Admin / HR routes
+router.post("/generate-qr", requireRole("ADMIN", "HR"), attendanceController.generateQR);
 router.get("/", requireRole("ADMIN", "HR"), attendanceController.getAllAttendance);
 router.get("/:employeeId", requireRole("ADMIN", "HR"), attendanceController.getAttendanceByEmployeeId);
 

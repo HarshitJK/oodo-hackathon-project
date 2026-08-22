@@ -6,6 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import api from "../../api";
 import { formatDate, formatTime } from "../../lib/utils";
 import { CalendarCheck, LogIn, LogOut, Clock } from "lucide-react";
+import QRCodeCard from "../../components/attendance/QRCodeCard";
 
 interface AttendanceRecord {
   _id: string;
@@ -24,7 +25,7 @@ const statusBadge: Record<string, string> = {
 };
 
 const Attendance: React.FC = () => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({ startDate: "", endDate: "", status: "", period: "" });
@@ -145,6 +146,8 @@ const Attendance: React.FC = () => {
             <p className="text-slate-400 text-sm">Attendance history and timesheets for {displayName}</p>
           </div>
         </div>
+
+        {(role === "ADMIN" || role === "HR") && <QRCodeCard />}
 
         {/* Filters */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-5 flex flex-wrap gap-3 items-end">

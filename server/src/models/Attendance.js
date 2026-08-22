@@ -32,6 +32,23 @@ const attendanceSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    qrToken: {
+      type: String,
+      default: null,
+    },
+    verificationMethod: {
+      type: String,
+      enum: ["MANUAL", "QR"],
+      default: "MANUAL",
+    },
+    checkedInAt: {
+      type: Date,
+      default: null,
+    },
+    checkedOutAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

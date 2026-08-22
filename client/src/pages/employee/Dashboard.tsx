@@ -13,8 +13,10 @@ import {
   LogIn,
   LogOut,
   Clock,
+  QrCode,
 } from "lucide-react";
 import { formatTime, formatDate, getGreeting } from "../../lib/utils";
+import QRScanner from "../../components/attendance/QRScanner";
 
 interface AttendanceRecord {
   _id: string;
@@ -69,6 +71,7 @@ const EmployeeDashboard: React.FC = () => {
   const [todayRecord, setTodayRecord] = useState<AttendanceRecord | null>(null);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const [feedMessage, setFeedMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -102,12 +105,12 @@ const EmployeeDashboard: React.FC = () => {
     fetchDashboard();
   }, []);
 
-  const handleCheckIn = async () => {
+  const handleCheckIn = async (token: string) => {
     setIsCheckingIn(true);
     try {
-      const res = await api.post("/attendance/check-in", {});
-      setTodayRecord(res.data?.data?.record || res.data?.data);
-      setFeedMessage("Checked in successfully!");
+      const res = await api.post("/attendance/check-in", { token });
+      setTodayRecord(res.data?.data?.attendance || res.data?.data);
+      setFeedMessage("Checked in successfully via QR!");
       fetchDashboard();
     } catch (err: unknown) {
       setFeedMessage(
@@ -235,17 +238,17 @@ const EmployeeDashboard: React.FC = () => {
 
             <div className="flex gap-3">
               <button
-                id="btn-check-in"
-                onClick={handleCheckIn}
-                disabled={isCheckingIn || !!todayRecord?.checkIn}
+                id="btn-scan-qr"
+                onClick={() => setIsScanning(true)}
+                disabled={isCheckingIn || !!todayRecord?.checkIn || isScanning}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-900/20"
               >
                 {isCheckingIn ? (
                   <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                 ) : (
-                  <LogIn className="w-3.5 h-3.5" />
+                  <QrCode className="w-3.5 h-3.5" />
                 )}
-                Check In
+                Scan QR
               </button>
               <button
                 id="btn-check-out"
@@ -262,6 +265,18 @@ const EmployeeDashboard: React.FC = () => {
               </button>
             </div>
           </div>
+          
+          {/* QR Scanner Container */}
+          {isScanning && (
+            <div className="mt-6 pt-6 border-t border-slate-800">
+               <QRScanner 
+                 isScanning={isScanning} 
+                 setIsScanning={setIsScanning} 
+                 onScanSuccess={handleCheckIn}
+                 onScanError={(err) => setFeedMessage(`Scan error: ${err}`)}
+               />
+            </div>
+          )}
         </div>
 
         {/* Stat Cards */}

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const checkInSchema = z.object({
+  token: z.string().optional(),
   notes: z.string().optional(),
 });
 

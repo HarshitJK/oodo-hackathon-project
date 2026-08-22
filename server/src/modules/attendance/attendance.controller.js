@@ -107,3 +107,57 @@ export const getTodayAttendance = async (req, res, next) => {
     next(error);
   }
 };
+
+import { createAttendanceQRToken } from "../../utils/createAttendanceQR.js";
+
+export const generateQR = async (req, res, next) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const token = createAttendanceQRToken(today);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+
+    res.status(200).json({
+      success: true,
+      token,
+      expiresAt,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const checkInQR = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "Token is required.",
+      });
+    }
+
+    const employeeName = req.user.fullName || req.user.firstName;
+    const record = await attendanceService.checkInQR(req.user._id, token, employeeName);
+
+    await auditLogger({
+      actorId: req.user._id,
+      action: "ATTENDANCE_CHECK_IN_QR",
+      module: "ATTENDANCE",
+      targetId: record._id,
+      targetType: "Attendance",
+      ipAddress: req.ip,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Check-in successful",
+      data: { attendance: record },
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+      errors: [],
+    });
+  }
+};

@@ -1,5 +1,6 @@
 import Attendance from "../../models/Attendance.js";
 import { getIO } from "../../sockets/index.js";
+import { verifyAttendanceQRToken } from "../../utils/createAttendanceQR.js";
 
 const getStartOfDay = (date = new Date()) => {
   const d = new Date(date);
@@ -11,6 +12,61 @@ const getEndOfDay = (date = new Date()) => {
   const d = new Date(date);
   d.setHours(23, 59, 59, 999);
   return d;
+};
+
+export const checkInQR = async (employeeId, token, employeeName) => {
+  const startOfDay = getStartOfDay();
+  const endOfDay = getEndOfDay();
+
+  let decoded;
+  try {
+    decoded = verifyAttendanceQRToken(token);
+  } catch (err) {
+    throw new Error("Invalid or expired QR token.");
+  }
+
+  const tokenDate = getStartOfDay(decoded.date);
+  if (tokenDate.getTime() !== startOfDay.getTime()) {
+    throw new Error("QR token is not valid for today.");
+  }
+
+  const existing = await Attendance.findOne({
+    employee: employeeId,
+    date: { $gte: startOfDay, $lte: endOfDay },
+  });
+
+  if (existing && existing.checkIn) {
+    throw new Error("You have already checked in today.");
+  }
+
+  const now = new Date();
+  const record = existing || new Attendance({
+    employee: employeeId,
+    date: startOfDay,
+  });
+
+  record.checkIn = now;
+  record.checkedInAt = now;
+  record.status = "PRESENT";
+  record.qrToken = token;
+  record.verificationMethod = "QR";
+  await record.save();
+
+  try {
+    getIO().emit("attendance:updated", {
+      employeeId,
+      employeeName,
+      time: now,
+    });
+    // emit original event for backward compatibility
+    getIO().emit("attendance:update", {
+      action: "CHECK_IN",
+      employeeId,
+      record,
+    });
+  } catch (e) {}
+
+  return record;
 };
 
 export const checkIn = async (employeeId, { notes = "" }) => {
