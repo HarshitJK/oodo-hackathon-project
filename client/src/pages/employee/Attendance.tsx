@@ -5,7 +5,7 @@ import DataTable, { type Column } from "../../components/DataTable";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../api";
 import { formatDate, formatTime } from "../../lib/utils";
-import { CalendarCheck, LogIn, LogOut, Clock } from "lucide-react";
+import { LogIn, LogOut, Clock } from "lucide-react";
 import QRCodeCard from "../../components/attendance/QRCodeCard";
 
 interface AttendanceRecord {

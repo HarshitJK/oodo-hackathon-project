@@ -5,7 +5,7 @@ import DataTable, { type Column } from "../../components/DataTable";
 import { useSocket } from "../../hooks/useSocket";
 import api from "../../api";
 import { formatDate } from "../../lib/utils";
-import { FileText, Plus, X, Upload } from "lucide-react";
+import { Plus, X, Upload } from "lucide-react";
 import { leaveRequestSchema } from "../../lib/validation";
 import type { LeaveRequestFormData } from "../../lib/validation";
 

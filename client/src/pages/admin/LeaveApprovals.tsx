@@ -3,7 +3,7 @@ import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
 import DataTable, { type Column } from "../../components/DataTable";
 import api from "../../api";
-import { FileText, CheckCircle, XCircle, X } from "lucide-react";
+import { CheckCircle, XCircle, X } from "lucide-react";
 import { formatDate } from "../../lib/utils";
 
 interface LeaveEmployee {

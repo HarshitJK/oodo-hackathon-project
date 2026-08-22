@@ -3,7 +3,7 @@ import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
 import DataTable, { type Column } from "../../components/DataTable";
 import api from "../../api";
-import { Users, Search, Plus, X, UserMinus, Check, Copy } from "lucide-react";
+import { Search, Plus, X, UserMinus, Check, Copy } from "lucide-react";
 import { formatDate } from "../../lib/utils";
 import { createEmployeeSchema } from "../../lib/validation";
 import type { CreateEmployeeFormData } from "../../lib/validation";

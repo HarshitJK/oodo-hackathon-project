@@ -3,7 +3,7 @@ import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
 import DataTable, { type Column } from "../../components/DataTable";
 import api from "../../api";
-import { DollarSign, Edit3, X, Save } from "lucide-react";
+import { Edit3, X, Save } from "lucide-react";
 
 interface PopulatedEmployee {
   _id: string;

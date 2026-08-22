@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
 import api from "../../api";
-import { BarChart3, Building, CalendarCheck, TrendingUp } from "lucide-react";
+import { Building, CalendarCheck, TrendingUp } from "lucide-react";
 import {
   BarChart,
   Bar,
