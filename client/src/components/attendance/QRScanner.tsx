@@ -48,12 +48,12 @@ const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, onScanError, isSca
   return (
     <div className="w-full flex flex-col items-center justify-center">
       {isScanning && (
-        <div className="w-full max-w-sm rounded-xl overflow-hidden shadow-lg border border-slate-700 bg-slate-900">
+        <div className="w-full max-w-sm rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-white">
           <div id="qr-reader" className="w-full" />
           <div className="p-4 flex justify-center">
              <button
                 onClick={() => setIsScanning(false)}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-sm font-semibold transition-colors"
+                className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-sm font-semibold border border-rose-200 transition-colors"
              >
                 Cancel Scan
              </button>

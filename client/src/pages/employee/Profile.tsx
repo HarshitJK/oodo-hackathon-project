@@ -134,36 +134,31 @@ const Profile: React.FC = () => {
   const initials = displayName.charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
       <Navbar />
       <main className="ml-64 pt-16 p-6 animate-fade-in">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-sky-600/10 border border-sky-600/20">
-            <User className="w-5 h-5 text-sky-400" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white">My Profile</h2>
-            <p className="text-slate-400 text-sm">Personal details, contact information, and security</p>
-          </div>
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-slate-900">My Profile</h2>
+          <p className="text-slate-500 text-sm mt-0.5">Personal details, contact information, and security</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Avatar / Summary card */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col items-center gap-4 h-fit">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 flex flex-col items-center gap-4 h-fit shadow-sm">
             <div className="relative group">
               {previewUrl ? (
                 <img
                   src={previewUrl}
                   alt={displayName}
-                  className="w-24 h-24 rounded-full object-cover border-2 border-violet-600/40"
+                  className="w-24 h-24 rounded-full object-cover border-2 border-brand-500/40"
                 />
               ) : (
-                <div className="w-24 h-24 rounded-full bg-violet-600/20 border-2 border-violet-600/40 flex items-center justify-center text-4xl font-bold text-violet-400">
+                <div className="w-24 h-24 rounded-full bg-brand-50 border-2 border-brand-200 flex items-center justify-center text-4xl font-bold text-brand-600">
                   {initials}
                 </div>
               )}
-              <label className="absolute bottom-0 right-0 p-2 rounded-full bg-slate-800 border border-slate-700 text-slate-300 hover:text-violet-400 cursor-pointer transition-colors shadow-md">
+              <label className="absolute bottom-0 right-0 p-2 rounded-full bg-white border border-gray-200 text-slate-500 hover:text-brand-500 cursor-pointer transition-colors shadow-md">
                 <Camera className="w-4 h-4" />
                 <input
                   type="file"
@@ -180,34 +175,34 @@ const Profile: React.FC = () => {
               </label>
             </div>
             <div className="text-center">
-              <p className="text-white font-semibold text-base">{displayName}</p>
-              <p className="text-violet-400 text-xs font-medium tracking-wide uppercase mt-0.5">
+              <p className="text-slate-900 font-semibold text-base">{displayName}</p>
+              <p className="text-brand-600 text-xs font-medium tracking-wide uppercase mt-0.5">
                 {user?.role}
               </p>
               <p className="text-slate-500 text-xs mt-1">{user?.email}</p>
             </div>
 
             {/* Read-only Information */}
-            <div className="w-full mt-2 space-y-2.5 border-t border-slate-800 pt-4 text-sm">
+            <div className="w-full mt-2 space-y-2.5 border-t border-gray-100 pt-4 text-sm">
               <div className="flex justify-between">
                 <span className="text-slate-500 text-xs">Employee ID</span>
-                <span className="text-slate-300 font-mono text-xs">{user?.employeeId || "—"}</span>
+                <span className="text-slate-700 font-mono text-xs font-medium">{user?.employeeId || "—"}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500 text-xs">Login ID</span>
-                <span className="text-slate-300 font-mono text-xs">{user?.loginId || "—"}</span>
+                <span className="text-slate-700 font-mono text-xs font-medium">{user?.loginId || "—"}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500 text-xs">Department</span>
-                <span className="text-slate-300 text-xs">{user?.department || "—"}</span>
+                <span className="text-slate-700 text-xs font-medium">{user?.department || "—"}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500 text-xs">Designation</span>
-                <span className="text-slate-300 text-xs">{user?.designation || "—"}</span>
+                <span className="text-slate-700 text-xs font-medium">{user?.designation || "—"}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500 text-xs">Status</span>
-                <span className="text-emerald-400 text-xs font-semibold">{user?.status || "ACTIVE"}</span>
+                <span className="text-emerald-600 text-xs font-semibold">{user?.status || "ACTIVE"}</span>
               </div>
             </div>
           </div>
@@ -215,17 +210,17 @@ const Profile: React.FC = () => {
           {/* Edit Information & Security */}
           <div className="lg:col-span-2 space-y-6">
             {/* Contact Details Form */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-              <h3 className="text-slate-200 font-semibold mb-4 flex items-center gap-2">
-                <User className="w-4 h-4 text-violet-400" /> Contact Details
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+              <h3 className="text-slate-900 font-semibold mb-4 flex items-center gap-2">
+                <User className="w-4 h-4 text-brand-500" /> Contact Details
               </h3>
 
               {profileMsg && (
                 <div
                   className={`mb-4 px-4 py-2.5 rounded-lg text-sm border ${
                     profileMsg.type === "success"
-                      ? "bg-emerald-900/20 border-emerald-700/30 text-emerald-400"
-                      : "bg-rose-900/20 border-rose-700/30 text-rose-400"
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                      : "bg-rose-50 border-rose-200 text-rose-700"
                   }`}
                 >
                   {profileMsg.text}
@@ -234,7 +229,7 @@ const Profile: React.FC = () => {
 
               <form onSubmit={handleProfileSave} className="space-y-4">
                 <div>
-                  <label htmlFor="profile-phone" className="block text-sm font-medium text-slate-300 mb-1.5">
+                  <label htmlFor="profile-phone" className="block text-sm font-medium text-slate-700 mb-1.5">
                     Phone Number
                   </label>
                   <input
@@ -243,12 +238,12 @@ const Profile: React.FC = () => {
                     value={profileForm.phone}
                     onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))}
                     placeholder="+91 98765 43210"
-                    className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+                    className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="profile-address" className="block text-sm font-medium text-slate-300 mb-1.5">
+                  <label htmlFor="profile-address" className="block text-sm font-medium text-slate-700 mb-1.5">
                     Residential Address
                   </label>
                   <textarea
@@ -257,7 +252,7 @@ const Profile: React.FC = () => {
                     value={profileForm.address}
                     onChange={(e) => setProfileForm((p) => ({ ...p, address: e.target.value }))}
                     placeholder="Enter full residential address..."
-                    className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors resize-none"
+                    className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-colors resize-none"
                   />
                 </div>
 
@@ -266,7 +261,7 @@ const Profile: React.FC = () => {
                     id="profile-save"
                     type="submit"
                     disabled={isSavingProfile}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-sm font-semibold transition-colors shadow-lg shadow-violet-900/20"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
                   >
                     {isSavingProfile ? (
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -280,17 +275,17 @@ const Profile: React.FC = () => {
             </div>
 
             {/* Change Password Form */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-              <h3 className="text-slate-200 font-semibold mb-4 flex items-center gap-2">
-                <Lock className="w-4 h-4 text-violet-400" /> Change Password
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+              <h3 className="text-slate-900 font-semibold mb-4 flex items-center gap-2">
+                <Lock className="w-4 h-4 text-brand-500" /> Change Password
               </h3>
 
               {passwordMsg && (
                 <div
                   className={`mb-4 px-4 py-2.5 rounded-lg text-sm border ${
                     passwordMsg.type === "success"
-                      ? "bg-emerald-900/20 border-emerald-700/30 text-emerald-400"
-                      : "bg-rose-900/20 border-rose-700/30 text-rose-400"
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                      : "bg-rose-50 border-rose-200 text-rose-700"
                   }`}
                 >
                   {passwordMsg.text}
@@ -299,7 +294,7 @@ const Profile: React.FC = () => {
 
               <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Current Password
                   </label>
                   <input
@@ -307,16 +302,16 @@ const Profile: React.FC = () => {
                     value={passwordForm.currentPassword}
                     onChange={(e) => setPasswordForm((p) => ({ ...p, currentPassword: e.target.value }))}
                     placeholder="••••••••"
-                    className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+                    className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-colors"
                   />
                   {passwordErrors.currentPassword && (
-                    <p className="mt-1 text-xs text-rose-400">{passwordErrors.currentPassword}</p>
+                    <p className="mt-1 text-xs text-rose-600">{passwordErrors.currentPassword}</p>
                   )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       New Password
                     </label>
                     <input
@@ -324,14 +319,14 @@ const Profile: React.FC = () => {
                       value={passwordForm.newPassword}
                       onChange={(e) => setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))}
                       placeholder="At least 8 characters"
-                      className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+                      className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-colors"
                     />
                     {passwordErrors.newPassword && (
-                      <p className="mt-1 text-xs text-rose-400">{passwordErrors.newPassword}</p>
+                      <p className="mt-1 text-xs text-rose-600">{passwordErrors.newPassword}</p>
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Confirm New Password
                     </label>
                     <input
@@ -339,22 +334,22 @@ const Profile: React.FC = () => {
                       value={passwordForm.confirmPassword}
                       onChange={(e) => setPasswordForm((p) => ({ ...p, confirmPassword: e.target.value }))}
                       placeholder="Repeat new password"
-                      className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+                      className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-colors"
                     />
                     {passwordErrors.confirmPassword && (
-                      <p className="mt-1 text-xs text-rose-400">{passwordErrors.confirmPassword}</p>
+                      <p className="mt-1 text-xs text-rose-600">{passwordErrors.confirmPassword}</p>
                     )}
                   </div>
                 </div>
 
                 <div className="pt-2">
                   <button
-                    type="submit"
+                     type="submit"
                     disabled={isSavingPassword}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold transition-colors border border-slate-700"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-slate-700 text-sm font-semibold transition-colors border border-gray-200"
                   >
                     {isSavingPassword ? (
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
                     ) : (
                       <KeyRound className="w-4 h-4" />
                     )}

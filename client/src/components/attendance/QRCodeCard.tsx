@@ -48,40 +48,40 @@ const QRCodeCard: React.FC = () => {
   }, [expiresAt]);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 mb-6 flex flex-col items-center shadow-lg">
+    <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 flex flex-col items-center shadow-sm">
       <div className="w-full flex items-center justify-between mb-4">
-         <div>
-            <h3 className="text-white font-bold">Generate Attendance QR</h3>
-            <p className="text-slate-400 text-xs">Allow employees to check in by scanning</p>
-         </div>
-         <button
-            onClick={generateQR}
-            disabled={isLoading}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-sm font-semibold transition-colors"
-         >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-            {token ? "Regenerate" : "Generate QR"}
-         </button>
+        <div>
+          <h3 className="text-slate-900 font-bold">Generate Attendance QR</h3>
+          <p className="text-slate-500 text-xs">Allow employees to check in by scanning</p>
+        </div>
+        <button
+          onClick={generateQR}
+          disabled={isLoading}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-500 hover:bg-brand-600 disabled:opacity-40 text-white text-sm font-semibold transition-colors"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+          {token ? "Regenerate" : "Generate QR"}
+        </button>
       </div>
 
-      {error && <p className="text-rose-400 text-sm mb-4">{error}</p>}
+      {error && <p className="text-rose-600 text-sm mb-4">{error}</p>}
 
       {token ? (
-        <div className="flex flex-col items-center bg-slate-950 p-6 rounded-xl border border-slate-800 shadow-inner">
-          <div className="bg-white p-3 rounded-xl mb-4">
+        <div className="flex flex-col items-center bg-gray-50 p-6 rounded-xl border border-gray-200 w-full">
+          <div className="bg-white p-3 rounded-xl mb-4 border border-gray-100 shadow-sm">
             <QRCodeSVG value={token} size={200} />
           </div>
-          <div className="flex items-center gap-2 text-slate-300 font-mono">
-            <Clock className={`w-4 h-4 ${timeLeft === "Expired" ? "text-rose-500" : "text-emerald-400"}`} />
+          <div className="flex items-center gap-2 text-slate-600 font-mono text-sm">
+            <Clock className={`w-4 h-4 ${timeLeft === "Expired" ? "text-rose-500" : "text-emerald-500"}`} />
             <span className={timeLeft === "Expired" ? "text-rose-500" : ""}>
-               {timeLeft === "Expired" ? "QR Expired" : `Expires in ${timeLeft}`}
+              {timeLeft === "Expired" ? "QR Expired" : `Expires in ${timeLeft}`}
             </span>
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center bg-slate-950 p-8 rounded-xl border border-slate-800 border-dashed w-full max-w-sm h-64 text-slate-500">
-           <RefreshCw className="w-8 h-8 mb-3 opacity-20" />
-           <p className="text-sm">Click Generate QR to begin</p>
+        <div className="flex flex-col items-center justify-center bg-gray-50 p-8 rounded-xl border border-gray-200 border-dashed w-full max-w-sm h-64 text-slate-400">
+          <RefreshCw className="w-8 h-8 mb-3 opacity-30" />
+          <p className="text-sm">Click Generate QR to begin</p>
         </div>
       )}
     </div>

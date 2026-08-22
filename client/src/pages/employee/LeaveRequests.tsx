@@ -22,15 +22,15 @@ interface LeaveRequestItem {
 }
 
 const statusBadge: Record<string, string> = {
-  PENDING: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-900/30 text-amber-400 border border-amber-700/30",
-  APPROVED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-900/30 text-emerald-400 border border-emerald-700/30",
-  REJECTED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-900/30 text-rose-400 border border-rose-700/30",
+  PENDING: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200",
+  APPROVED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200",
+  REJECTED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200",
 };
 
 const typeBadge: Record<string, string> = {
-  PAID: "px-2 py-0.5 rounded-full text-xs font-semibold bg-violet-900/30 text-violet-400 border border-violet-700/30",
-  SICK: "px-2 py-0.5 rounded-full text-xs font-semibold bg-sky-900/30 text-sky-400 border border-sky-700/30",
-  UNPAID: "px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700",
+  PAID: "px-2 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-100",
+  SICK: "px-2 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200",
+  UNPAID: "px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-slate-600 border border-gray-200",
 };
 
 const LeaveRequests: React.FC = () => {
@@ -167,9 +167,9 @@ const LeaveRequests: React.FC = () => {
       header: "Remarks / Reason",
       render: (val, row) => (
         <div>
-          <span className="text-slate-300 text-xs">{(val as string) || "—"}</span>
+          <span className="text-slate-600 text-xs">{(val as string) || "—"}</span>
           {row.rejectionComment ? (
-            <p className="text-rose-400 text-xs mt-0.5">
+            <p className="text-rose-600 text-xs mt-0.5">
               Reason: {String(row.rejectionComment)}
             </p>
           ) : null}
@@ -195,19 +195,14 @@ const LeaveRequests: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
       <Navbar />
       <main className="ml-64 pt-16 p-6 animate-fade-in">
         <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-600/10 border border-amber-600/20">
-              <FileText className="w-5 h-5 text-amber-400" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">Leave Requests</h2>
-              <p className="text-slate-400 text-sm">Apply for and track your time off</p>
-            </div>
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">Leave Requests</h2>
+            <p className="text-slate-500 text-sm mt-0.5">Apply for and track your time off</p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -217,7 +212,7 @@ const LeaveRequests: React.FC = () => {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+              className="px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-700 text-sm focus:outline-none focus:border-brand-500 transition-colors"
             >
               <option value="">All Statuses</option>
               <option value="PENDING">Pending</option>
@@ -228,7 +223,7 @@ const LeaveRequests: React.FC = () => {
             <button
               id="btn-new-leave"
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-violet-900/20"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold transition-colors"
             >
               <Plus className="w-4 h-4" /> Apply for Leave
             </button>
@@ -248,17 +243,17 @@ const LeaveRequests: React.FC = () => {
             <button
               disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 text-sm transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-40 text-slate-600 text-sm transition-colors"
             >
               Previous
             </button>
-            <span className="text-slate-400 text-sm">
+            <span className="text-slate-500 text-sm">
               Page {page} of {totalPages}
             </span>
             <button
               disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 text-sm transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-40 text-slate-600 text-sm transition-colors"
             >
               Next
             </button>
@@ -267,27 +262,27 @@ const LeaveRequests: React.FC = () => {
 
         {/* Apply Leave Modal */}
         {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-slide-up">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-md shadow-xl animate-slide-up">
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-white font-semibold text-lg">Apply for Leave</h3>
+                <h3 className="text-slate-900 font-semibold text-lg">Apply for Leave</h3>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="text-slate-500 hover:text-slate-300 transition-colors"
+                  className="text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {serverMsg && (
-                <div className="mb-4 px-3 py-2 rounded-lg bg-rose-900/20 border border-rose-700/30 text-rose-400 text-sm">
+                <div className="mb-4 px-3 py-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm">
                   {serverMsg}
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Leave Type
                   </label>
                   <select
@@ -299,20 +294,20 @@ const LeaveRequests: React.FC = () => {
                         leaveType: e.target.value as "PAID" | "SICK" | "UNPAID",
                       }))
                     }
-                    className="w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+                    className="w-full px-3 py-2.5 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-colors"
                   >
                     <option value="PAID">Paid Leave</option>
                     <option value="SICK">Sick Leave</option>
                     <option value="UNPAID">Unpaid Leave</option>
                   </select>
                   {formErrors.leaveType && (
-                    <p className="mt-1 text-xs text-rose-400">{formErrors.leaveType}</p>
+                    <p className="mt-1 text-xs text-rose-600">{formErrors.leaveType}</p>
                   )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Start Date
                     </label>
                     <input
@@ -320,14 +315,14 @@ const LeaveRequests: React.FC = () => {
                       type="date"
                       value={form.startDate}
                       onChange={(e) => setForm((p) => ({ ...p, startDate: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+                      className="w-full px-3 py-2.5 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-colors"
                     />
                     {formErrors.startDate && (
-                      <p className="mt-1 text-xs text-rose-400">{formErrors.startDate}</p>
+                      <p className="mt-1 text-xs text-rose-600">{formErrors.startDate}</p>
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       End Date
                     </label>
                     <input
@@ -335,16 +330,16 @@ const LeaveRequests: React.FC = () => {
                       type="date"
                       value={form.endDate}
                       onChange={(e) => setForm((p) => ({ ...p, endDate: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+                      className="w-full px-3 py-2.5 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-colors"
                     />
                     {formErrors.endDate && (
-                      <p className="mt-1 text-xs text-rose-400">{formErrors.endDate}</p>
+                      <p className="mt-1 text-xs text-rose-600">{formErrors.endDate}</p>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Reason / Remarks
                   </label>
                   <textarea
@@ -353,17 +348,17 @@ const LeaveRequests: React.FC = () => {
                     value={form.remarks}
                     onChange={(e) => setForm((p) => ({ ...p, remarks: e.target.value }))}
                     placeholder="Provide brief context for your request..."
-                    className="w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors resize-none"
+                    className="w-full px-3 py-2.5 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-colors resize-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Supporting Document (optional)
                   </label>
                   <div className="flex items-center gap-3">
-                    <label className="cursor-pointer flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 text-xs transition-colors">
-                      <Upload className="w-4 h-4 text-violet-400" />
+                    <label className="cursor-pointer flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 hover:bg-gray-100 text-slate-600 text-xs transition-colors">
+                      <Upload className="w-4 h-4 text-brand-500" />
                       {attachment ? attachment.name : "Choose file"}
                       <input
                         type="file"
@@ -379,7 +374,7 @@ const LeaveRequests: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setAttachment(null)}
-                        className="text-slate-500 hover:text-rose-400 text-xs"
+                        className="text-slate-500 hover:text-rose-600 text-xs"
                       >
                         Remove
                       </button>
@@ -391,7 +386,7 @@ const LeaveRequests: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors"
+                    className="flex-1 py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-slate-700 text-sm font-medium transition-colors"
                   >
                     Cancel
                   </button>
@@ -399,7 +394,7 @@ const LeaveRequests: React.FC = () => {
                     id="leave-submit"
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
                   >
                     {isSubmitting ? (
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />

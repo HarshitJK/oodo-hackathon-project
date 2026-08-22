@@ -56,24 +56,24 @@ function DataTable<T extends Record<string, unknown>>({
   const SortIcon = ({ col }: { col: Column<T> }) => {
     if (!col.sortable) return null;
     const key = String(col.key);
-    if (sortKey !== key) return <ChevronsUpDown className="w-3.5 h-3.5 text-slate-600" />;
-    if (sortDir === "asc") return <ChevronUp className="w-3.5 h-3.5 text-violet-400" />;
-    return <ChevronDown className="w-3.5 h-3.5 text-violet-400" />;
+    if (sortKey !== key) return <ChevronsUpDown className="w-3.5 h-3.5 text-slate-400" />;
+    if (sortDir === "asc") return <ChevronUp className="w-3.5 h-3.5 text-brand-500" />;
+    return <ChevronDown className="w-3.5 h-3.5 text-brand-500" />;
   };
 
   return (
-    <div className={cn("rounded-xl border border-slate-800 bg-slate-900 overflow-hidden", className)}>
+    <div className={cn("rounded-lg border border-gray-200 bg-white overflow-hidden", className)}>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-800 bg-slate-800/50">
+            <tr className="border-b border-gray-200 bg-gray-50">
               {columns.map((col) => (
                 <th
                   key={String(col.key)}
                   onClick={() => col.sortable && handleSort(String(col.key))}
                   className={cn(
-                    "px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap",
-                    col.sortable && "cursor-pointer hover:text-slate-200 select-none",
+                    "px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap",
+                    col.sortable && "cursor-pointer hover:text-slate-900 select-none",
                     col.className
                   )}
                 >
@@ -90,13 +90,13 @@ function DataTable<T extends Record<string, unknown>>({
               <tr>
                 <td colSpan={columns.length} className="px-4 py-12 text-center">
                   <div className="flex items-center justify-center">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-700 border-t-violet-500" />
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500" />
                   </div>
                 </td>
               </tr>
             ) : sortedData.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-4 py-12 text-center text-slate-500">
+                <td colSpan={columns.length} className="px-4 py-12 text-center text-slate-400 text-sm">
                   {emptyMessage}
                 </td>
               </tr>
@@ -104,12 +104,12 @@ function DataTable<T extends Record<string, unknown>>({
               sortedData.map((row, rowIdx) => (
                 <tr
                   key={rowIdx}
-                  className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+                  className="border-b border-gray-100 last:border-0 hover:bg-gray-50/60 transition-colors"
                 >
                   {columns.map((col) => (
                     <td
                       key={String(col.key)}
-                      className={cn("px-4 py-3.5 text-slate-300", col.className)}
+                      className={cn("px-4 py-3.5 text-slate-700", col.className)}
                     >
                       {col.render
                         ? col.render(row[String(col.key)], row)

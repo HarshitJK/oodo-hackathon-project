@@ -87,11 +87,12 @@ const Analytics: React.FC = () => {
   }, []);
 
   const tooltipStyle = {
-    backgroundColor: "#0f172a",
-    border: "1px solid #334155",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
     borderRadius: "8px",
-    color: "#f8fafc",
+    color: "#0f172a",
     fontSize: "12px",
+    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
   };
 
   const attendanceChartData = [
@@ -104,19 +105,14 @@ const Analytics: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
       <Navbar />
       <main className="ml-64 pt-16 p-6 animate-fade-in">
         <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-sky-600/10 border border-sky-600/20">
-              <BarChart3 className="w-5 h-5 text-sky-400" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">Workforce Analytics</h2>
-              <p className="text-slate-400 text-sm">Real-time breakdown of staffing, leaves, and presence</p>
-            </div>
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">Workforce Analytics</h2>
+            <p className="text-slate-500 text-sm mt-0.5">Real-time breakdown of staffing, leaves, and presence</p>
           </div>
         </div>
 
@@ -129,19 +125,19 @@ const Analytics: React.FC = () => {
             {/* Top Grid: Attendance vs Leave types */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Daily Attendance Overview */}
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+              <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
-                  <CalendarCheck className="w-4 h-4 text-emerald-400" />
-                  <h3 className="text-slate-200 font-semibold">Today's Attendance Status</h3>
+                  <CalendarCheck className="w-4 h-4 text-emerald-600" />
+                  <h3 className="text-slate-900 font-semibold">Today's Attendance Status</h3>
                 </div>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={attendanceChartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                       <XAxis dataKey="name" stroke="#64748b" />
                       <YAxis stroke="#64748b" />
                       <Tooltip contentStyle={tooltipStyle} />
-                      <Legend wrapperStyle={{ color: "#94a3b8", fontSize: "12px" }} />
+                      <Legend wrapperStyle={{ color: "#64748b", fontSize: "12px" }} />
                       <Bar dataKey="Present" fill="#10b981" radius={[4, 4, 0, 0]} />
                       <Bar dataKey="Half Day" fill="#f59e0b" radius={[4, 4, 0, 0]} />
                       <Bar dataKey="Absent" fill="#f43f5e" radius={[4, 4, 0, 0]} />
@@ -151,10 +147,10 @@ const Analytics: React.FC = () => {
               </div>
 
               {/* Leave Distribution Pie */}
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+              <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
-                  <TrendingUp className="w-4 h-4 text-violet-400" />
-                  <h3 className="text-slate-200 font-semibold">Leave Applications by Category</h3>
+                  <TrendingUp className="w-4 h-4 text-brand-500" />
+                  <h3 className="text-slate-900 font-semibold">Leave Applications by Category</h3>
                 </div>
                 {leaveStats.length === 0 ? (
                   <div className="h-64 flex items-center justify-center text-slate-500 text-sm">
@@ -191,7 +187,7 @@ const Analytics: React.FC = () => {
                             className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }}
                           />
-                          <span className="text-slate-300 font-medium">{item.type}</span>
+                          <span className="text-slate-700 font-medium">{item.type}</span>
                           <span className="text-slate-500 font-mono">({item.count})</span>
                         </div>
                       ))}
@@ -202,10 +198,10 @@ const Analytics: React.FC = () => {
             </div>
 
             {/* Department Breakdown Bar Chart */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
-                <Building className="w-4 h-4 text-sky-400" />
-                <h3 className="text-slate-200 font-semibold">Workforce Distribution by Department</h3>
+                <Building className="w-4 h-4 text-sky-500" />
+                <h3 className="text-slate-900 font-semibold">Workforce Distribution by Department</h3>
               </div>
               {departments.length === 0 ? (
                 <div className="h-48 flex items-center justify-center text-slate-500 text-sm">
@@ -221,11 +217,11 @@ const Analytics: React.FC = () => {
                       }))}
                       margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                       <XAxis dataKey="department" stroke="#64748b" tick={{ fontSize: 11 }} />
                       <YAxis stroke="#64748b" />
                       <Tooltip contentStyle={tooltipStyle} />
-                      <Bar dataKey="Employees" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Employees" fill="#603F57" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

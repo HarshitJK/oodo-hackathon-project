@@ -84,7 +84,7 @@ const Login: React.FC = () => {
 
           {/* Server Error */}
           {serverError && (
-            <div className="mb-4 px-4 py-3 rounded-lg bg-rose-900/20 border border-rose-700/30 text-rose-400 text-sm">
+            <div className="mb-4 px-4 py-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm">
               {serverError}
             </div>
           )}
@@ -106,7 +106,7 @@ const Login: React.FC = () => {
                 className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 transition-all"
               />
               {errors.identifier && (
-                <p className="mt-1 text-xs text-rose-400">{errors.identifier}</p>
+                <p className="mt-1 text-xs text-rose-600">{errors.identifier}</p>
               )}
             </div>
 
@@ -144,7 +144,7 @@ const Login: React.FC = () => {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-xs text-rose-400">{errors.password}</p>
+                <p className="mt-1 text-xs text-rose-600">{errors.password}</p>
               )}
             </div>
 

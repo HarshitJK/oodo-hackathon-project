@@ -63,7 +63,7 @@ const EmployeePayroll: React.FC = () => {
       render: (_, row) => {
         const p = row as unknown as PayrollItem;
         return (
-          <span className="font-medium text-slate-200">
+          <span className="font-medium text-slate-900">
             {monthNames[(p.month || 1) - 1]} {p.year}
           </span>
         );
@@ -72,23 +72,23 @@ const EmployeePayroll: React.FC = () => {
     {
       key: "basicSalary",
       header: "Basic Salary",
-      render: (val) => <span className="font-mono text-slate-300">{fmt(Number(val))}</span>,
+      render: (val) => <span className="font-mono text-slate-700">{fmt(Number(val))}</span>,
     },
     {
       key: "hra",
       header: "HRA",
-      render: (val) => <span className="font-mono text-slate-300">{fmt(Number(val))}</span>,
+      render: (val) => <span className="font-mono text-slate-700">{fmt(Number(val))}</span>,
     },
     {
       key: "specialAllowance",
       header: "Special Allowance",
-      render: (val) => <span className="font-mono text-slate-300">{fmt(Number(val))}</span>,
+      render: (val) => <span className="font-mono text-slate-700">{fmt(Number(val))}</span>,
     },
     {
       key: "bonus",
       header: "Bonus",
       render: (val) => (
-        <span className="font-mono text-emerald-400">
+        <span className="font-mono text-emerald-600">
           {Number(val) > 0 ? `+${fmt(Number(val))}` : "—"}
         </span>
       ),
@@ -97,7 +97,7 @@ const EmployeePayroll: React.FC = () => {
       key: "deductions",
       header: "Deductions",
       render: (val) => (
-        <span className="font-mono text-rose-400">
+        <span className="font-mono text-rose-600">
           {Number(val) > 0 ? `-${fmt(Number(val))}` : "—"}
         </span>
       ),
@@ -106,7 +106,7 @@ const EmployeePayroll: React.FC = () => {
       key: "netSalary",
       header: "Net Pay",
       render: (val) => (
-        <span className="font-mono font-bold text-emerald-400 text-sm">
+        <span className="font-mono font-bold text-emerald-700 text-sm">
           {fmt(Number(val))}
         </span>
       ),
@@ -114,22 +114,15 @@ const EmployeePayroll: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
       <Navbar />
       <main className="ml-64 pt-16 p-6 animate-fade-in">
-        <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-600/10 border border-emerald-600/20">
-              <DollarSign className="w-5 h-5 text-emerald-400" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">My Payroll & Payslips</h2>
-              <p className="text-slate-400 text-sm">
-                Salary breakdown and payment records for {user?.fullName || user?.firstName}
-              </p>
-            </div>
-          </div>
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-slate-900">My Payroll &amp; Payslips</h2>
+          <p className="text-slate-500 text-sm mt-0.5">
+            Salary breakdown and payment records for {user?.fullName || user?.firstName}
+          </p>
         </div>
 
         {/* Current Month Highlights */}
@@ -171,8 +164,8 @@ const EmployeePayroll: React.FC = () => {
         </div>
 
         {/* Payslips History */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-          <h3 className="text-slate-200 font-semibold mb-4">Payslip History</h3>
+        <div className="bg-white border border-gray-200 rounded-lg p-5">
+          <h3 className="text-slate-900 font-semibold mb-4">Payslip History</h3>
           <DataTable
             columns={columns}
             data={payrollList as unknown as Record<string, unknown>[]}

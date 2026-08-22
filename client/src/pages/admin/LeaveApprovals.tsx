@@ -30,9 +30,9 @@ interface LeaveRequestItem {
 }
 
 const statusBadge: Record<string, string> = {
-  PENDING: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-900/30 text-amber-400 border border-amber-700/30",
-  APPROVED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-900/30 text-emerald-400 border border-emerald-700/30",
-  REJECTED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-900/30 text-rose-400 border border-rose-700/30",
+  PENDING: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200",
+  APPROVED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200",
+  REJECTED: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200",
 };
 
 const LeaveApprovals: React.FC = () => {
@@ -125,7 +125,7 @@ const LeaveApprovals: React.FC = () => {
         const emp = val as LeaveEmployee | null;
         return emp ? (
           <div>
-            <p className="text-slate-200 font-medium text-sm">
+            <p className="text-slate-900 font-medium text-sm">
               {emp.firstName} {emp.lastName}
             </p>
             <p className="text-slate-500 text-xs">
@@ -133,7 +133,7 @@ const LeaveApprovals: React.FC = () => {
             </p>
           </div>
         ) : (
-          <span className="text-slate-500">—</span>
+          <span className="text-slate-400">—</span>
         );
       },
     },
@@ -141,7 +141,7 @@ const LeaveApprovals: React.FC = () => {
       key: "leaveType",
       header: "Type",
       render: (val) => (
-        <span className="capitalize font-medium text-slate-300">{String(val || "PAID")}</span>
+        <span className="capitalize font-medium text-slate-700">{String(val || "PAID")}</span>
       ),
     },
     {
@@ -159,9 +159,9 @@ const LeaveApprovals: React.FC = () => {
       header: "Reason / Remarks",
       render: (val, row) => (
         <div className="max-w-xs">
-          <span className="text-slate-400 text-xs block truncate">{(val as string) || "—"}</span>
+          <span className="text-slate-500 text-xs block truncate">{(val as string) || "—"}</span>
           {row.rejectionComment ? (
-            <span className="text-rose-400 text-[11px] block mt-0.5">
+            <span className="text-rose-600 text-[11px] block mt-0.5">
               Rejected: {String(row.rejectionComment)}
             </span>
           ) : null}
@@ -186,7 +186,7 @@ const LeaveApprovals: React.FC = () => {
             <button
               onClick={() => handleApprove(val as string)}
               disabled={actionLoading === val}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-900/30 hover:bg-emerald-800/40 text-emerald-400 text-xs font-semibold transition-colors disabled:opacity-50 border border-emerald-700/30"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold transition-colors disabled:opacity-50 border border-emerald-200"
             >
               <CheckCircle className="w-3.5 h-3.5" /> Approve
             </button>
@@ -197,7 +197,7 @@ const LeaveApprovals: React.FC = () => {
                 setRejectError("");
               }}
               disabled={actionLoading === val}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-900/30 hover:bg-rose-800/40 text-rose-400 text-xs font-semibold transition-colors disabled:opacity-50 border border-rose-700/30"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition-colors disabled:opacity-50 border border-rose-200"
             >
               <XCircle className="w-3.5 h-3.5" /> Reject
             </button>
@@ -207,19 +207,14 @@ const LeaveApprovals: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
       <Navbar />
       <main className="ml-64 pt-16 p-6 animate-fade-in">
         <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-600/10 border border-amber-600/20">
-              <FileText className="w-5 h-5 text-amber-400" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">Leave Approvals</h2>
-              <p className="text-slate-400 text-sm">Review, approve, or reject employee leave applications</p>
-            </div>
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">Leave Approvals</h2>
+            <p className="text-slate-500 text-sm mt-0.5">Review, approve, or reject employee leave applications</p>
           </div>
 
           <div className="flex gap-2">
@@ -234,8 +229,8 @@ const LeaveApprovals: React.FC = () => {
                 onClick={() => setStatusFilter(tab.value)}
                 className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   statusFilter === tab.value
-                    ? "bg-violet-600 text-white shadow-md shadow-violet-900/30"
-                    : "bg-slate-800 text-slate-400 hover:text-slate-200"
+                    ? "bg-brand-500 text-white"
+                    : "bg-white border border-gray-200 text-slate-600 hover:bg-gray-50"
                 }`}
               >
                 {tab.label}
@@ -253,27 +248,27 @@ const LeaveApprovals: React.FC = () => {
 
         {/* Rejection Reason Modal */}
         {rejectingLeaveId && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-slide-up">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-md shadow-xl animate-slide-up">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-white font-semibold text-base">Reject Leave Request</h3>
+                <h3 className="text-slate-900 font-semibold text-base">Reject Leave Request</h3>
                 <button
                   onClick={() => setRejectingLeaveId(null)}
-                  className="text-slate-500 hover:text-slate-300"
+                  className="text-slate-400 hover:text-slate-600"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {rejectError && (
-                <div className="mb-3 px-3 py-2 rounded-lg bg-rose-900/20 border border-rose-700/30 text-rose-400 text-xs">
+                <div className="mb-3 px-3 py-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs">
                   {rejectError}
                 </div>
               )}
 
               <form onSubmit={handleRejectSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                  <label className="block text-xs font-medium text-slate-700 mb-1.5">
                     Reason for Rejection *
                   </label>
                   <textarea
@@ -281,7 +276,7 @@ const LeaveApprovals: React.FC = () => {
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     placeholder="e.g. Critical project milestone in progress / Insufficient team coverage"
-                    className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-rose-500 resize-none"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20 resize-none"
                   />
                 </div>
 
@@ -289,7 +284,7 @@ const LeaveApprovals: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setRejectingLeaveId(null)}
-                    className="flex-1 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors"
+                    className="flex-1 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-slate-700 text-sm font-medium transition-colors"
                   >
                     Cancel
                   </button>

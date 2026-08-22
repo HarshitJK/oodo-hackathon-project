@@ -19,9 +19,9 @@ interface AttendanceRecord {
 }
 
 const statusBadge: Record<string, string> = {
-  PRESENT: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-900/30 text-emerald-400 border border-emerald-700/30",
-  HALF_DAY: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-900/30 text-amber-400 border border-amber-700/30",
-  ABSENT: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-900/30 text-rose-400 border border-rose-700/30",
+  PRESENT: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200",
+  HALF_DAY: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200",
+  ABSENT: "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200",
 };
 
 const Attendance: React.FC = () => {
@@ -92,11 +92,11 @@ const Attendance: React.FC = () => {
       header: "Check In",
       render: (val) =>
         val ? (
-          <span className="flex items-center gap-1 text-emerald-400 font-mono text-xs">
+          <span className="flex items-center gap-1 text-emerald-600 font-mono text-xs">
             <LogIn className="w-3 h-3" /> {formatTime(val as string)}
           </span>
         ) : (
-          <span className="text-slate-600">—</span>
+          <span className="text-slate-400">—</span>
         ),
     },
     {
@@ -104,11 +104,11 @@ const Attendance: React.FC = () => {
       header: "Check Out",
       render: (val) =>
         val ? (
-          <span className="flex items-center gap-1 text-rose-400 font-mono text-xs">
+          <span className="flex items-center gap-1 text-rose-600 font-mono text-xs">
             <LogOut className="w-3 h-3" /> {formatTime(val as string)}
           </span>
         ) : (
-          <span className="text-slate-600">—</span>
+          <span className="text-slate-400">—</span>
         ),
     },
     {
@@ -116,47 +116,42 @@ const Attendance: React.FC = () => {
       header: "Working Hours",
       render: (val) =>
         val ? (
-          <span className="flex items-center gap-1 text-slate-300 font-mono text-xs">
-            <Clock className="w-3 h-3 text-sky-400" /> {String(val)} hrs
+          <span className="flex items-center gap-1 text-slate-700 font-mono text-xs">
+            <Clock className="w-3 h-3 text-sky-500" /> {String(val)} hrs
           </span>
         ) : (
-          <span className="text-slate-600">—</span>
+          <span className="text-slate-400">—</span>
         ),
     },
     {
       key: "notes",
       header: "Notes",
-      render: (val) => <span className="text-slate-400 text-xs">{(val as string) || "—"}</span>,
+      render: (val) => <span className="text-slate-500 text-xs">{(val as string) || "—"}</span>,
     },
   ];
 
   const displayName = user?.fullName || user?.firstName || "Employee";
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
       <Navbar />
       <main className="ml-64 pt-16 p-6 animate-fade-in">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-violet-600/10 border border-violet-600/20">
-            <CalendarCheck className="w-5 h-5 text-violet-400" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white">My Attendance</h2>
-            <p className="text-slate-400 text-sm">Attendance history and timesheets for {displayName}</p>
-          </div>
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-slate-900">My Attendance</h2>
+          <p className="text-slate-500 text-sm mt-0.5">Attendance history and timesheets for {displayName}</p>
         </div>
 
         {(role === "ADMIN" || role === "HR") && <QRCodeCard />}
 
         {/* Filters */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-5 flex flex-wrap gap-3 items-end">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-5 flex flex-wrap gap-3 items-end">
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Period</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Period</label>
             <select
               value={filters.period}
               onChange={(e) => setFilters((p) => ({ ...p, period: e.target.value }))}
-              className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+              className="px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-700 text-sm focus:outline-none focus:border-brand-500 transition-colors"
             >
               <option value="">All Time</option>
               <option value="daily">Today</option>
@@ -165,32 +160,32 @@ const Attendance: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Start Date</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Start Date</label>
             <input
               type="date"
               id="att-start-date"
               value={filters.startDate}
               onChange={(e) => setFilters((p) => ({ ...p, startDate: e.target.value }))}
-              className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+              className="px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-700 text-sm focus:outline-none focus:border-brand-500 transition-colors"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">End Date</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">End Date</label>
             <input
               type="date"
               id="att-end-date"
               value={filters.endDate}
               onChange={(e) => setFilters((p) => ({ ...p, endDate: e.target.value }))}
-              className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+              className="px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-700 text-sm focus:outline-none focus:border-brand-500 transition-colors"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Status</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
             <select
               id="att-status-filter"
               value={filters.status}
               onChange={(e) => setFilters((p) => ({ ...p, status: e.target.value }))}
-              className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+              className="px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-700 text-sm focus:outline-none focus:border-brand-500 transition-colors"
             >
               <option value="">All Statuses</option>
               <option value="PRESENT">Present</option>
@@ -201,13 +196,13 @@ const Attendance: React.FC = () => {
           <button
             id="att-filter-apply"
             onClick={handleApplyFilter}
-            className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors"
+            className="px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold transition-colors"
           >
             Apply Filters
           </button>
           <button
             onClick={handleResetFilter}
-            className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors"
+            className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-slate-600 text-sm font-medium transition-colors"
           >
             Reset
           </button>
@@ -226,17 +221,17 @@ const Attendance: React.FC = () => {
             <button
               disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 text-sm transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-40 text-slate-600 text-sm transition-colors"
             >
               Previous
             </button>
-            <span className="text-slate-400 text-sm">
+            <span className="text-slate-500 text-sm">
               Page {page} of {totalPages}
             </span>
             <button
               disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 text-sm transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-40 text-slate-600 text-sm transition-colors"
             >
               Next
             </button>

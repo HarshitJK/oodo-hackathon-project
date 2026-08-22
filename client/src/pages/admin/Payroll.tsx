@@ -131,7 +131,7 @@ const AdminPayroll: React.FC = () => {
         const emp = val as PopulatedEmployee | null;
         return emp ? (
           <div>
-            <p className="text-white font-medium text-sm">
+            <p className="text-slate-900 font-medium text-sm">
               {emp.firstName} {emp.lastName}
             </p>
             <p className="text-slate-500 text-xs">
@@ -139,14 +139,14 @@ const AdminPayroll: React.FC = () => {
             </p>
           </div>
         ) : (
-          <span className="text-slate-500">—</span>
+          <span className="text-slate-400">—</span>
         );
       },
     },
     {
       key: "basicSalary",
       header: "Basic Salary",
-      render: (val) => <span className="font-mono text-slate-300 text-xs">{fmt(Number(val))}</span>,
+      render: (val) => <span className="font-mono text-slate-700 text-xs">{fmt(Number(val))}</span>,
     },
     {
       key: "allowances",
@@ -154,14 +154,14 @@ const AdminPayroll: React.FC = () => {
       render: (_, row) => {
         const r = row as unknown as PayrollRecord;
         const all = (r.hra || 0) + (r.specialAllowance || 0);
-        return <span className="font-mono text-slate-300 text-xs">{fmt(all)}</span>;
+        return <span className="font-mono text-slate-700 text-xs">{fmt(all)}</span>;
       },
     },
     {
       key: "bonus",
       header: "Bonus",
       render: (val) => (
-        <span className="font-mono text-emerald-400 text-xs">
+        <span className="font-mono text-emerald-600 text-xs">
           {Number(val) > 0 ? `+${fmt(Number(val))}` : "—"}
         </span>
       ),
@@ -170,7 +170,7 @@ const AdminPayroll: React.FC = () => {
       key: "deductions",
       header: "Deductions",
       render: (val) => (
-        <span className="font-mono text-rose-400 text-xs">
+        <span className="font-mono text-rose-600 text-xs">
           {Number(val) > 0 ? `-${fmt(Number(val))}` : "—"}
         </span>
       ),
@@ -180,7 +180,7 @@ const AdminPayroll: React.FC = () => {
       header: "Net Pay",
       sortable: true,
       render: (val) => (
-        <span className="font-mono font-bold text-emerald-400 text-sm">
+        <span className="font-mono font-bold text-emerald-700 text-sm">
           {fmt(Number(val))}
         </span>
       ),
@@ -192,7 +192,7 @@ const AdminPayroll: React.FC = () => {
         <button
           onClick={() => handleOpenEdit(row as unknown as PayrollRecord)}
           title="Adjust Payroll & Compensation"
-          className="p-1 text-slate-400 hover:text-violet-400 rounded transition-colors"
+          className="p-1 text-slate-400 hover:text-brand-500 rounded transition-colors"
         >
           <Edit3 className="w-4 h-4" />
         </button>
@@ -201,42 +201,33 @@ const AdminPayroll: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
       <Navbar />
       <main className="ml-64 pt-16 p-6 animate-fade-in">
         <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-600/10 border border-emerald-600/20">
-              <DollarSign className="w-5 h-5 text-emerald-400" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">Payroll Management</h2>
-              <p className="text-slate-400 text-sm">Compensation structure, bonuses, and disbursements</p>
-            </div>
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">Payroll Management</h2>
+            <p className="text-slate-500 text-sm mt-0.5">Compensation structure, bonuses, and disbursements</p>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 rounded-xl px-5 py-3 flex items-center gap-6">
-            <div>
-              <p className="text-slate-500 text-[11px] uppercase tracking-wider font-medium">
-                Total Month Net Payout
-              </p>
-              <p className="text-emerald-400 font-bold text-xl font-mono">{fmt(totalNet)}</p>
-            </div>
+          <div className="bg-white border border-gray-200 rounded-lg px-5 py-3">
+            <p className="text-slate-500 text-[11px] uppercase tracking-wider font-medium">Total Month Net Payout</p>
+            <p className="text-emerald-700 font-bold text-xl font-mono">{fmt(totalNet)}</p>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-5 flex flex-wrap gap-3 items-end">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-5 flex flex-wrap gap-3 items-end">
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Month</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Month</label>
             <select
               value={selectedMonth}
               onChange={(e) => {
                 setSelectedMonth(Number(e.target.value));
                 setPage(1);
               }}
-              className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+              className="px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-700 text-sm focus:outline-none focus:border-brand-500"
             >
               {monthNames.map((m, idx) => (
                 <option key={m} value={idx + 1}>
@@ -247,14 +238,14 @@ const AdminPayroll: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Year</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Year</label>
             <select
               value={selectedYear}
               onChange={(e) => {
                 setSelectedYear(Number(e.target.value));
                 setPage(1);
               }}
-              className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+              className="px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-700 text-sm focus:outline-none focus:border-brand-500"
             >
               {[2024, 2025, 2026, 2027].map((y) => (
                 <option key={y} value={y}>
@@ -278,17 +269,17 @@ const AdminPayroll: React.FC = () => {
             <button
               disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 text-sm transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-40 text-slate-600 text-sm transition-colors"
             >
               Previous
             </button>
-            <span className="text-slate-400 text-sm">
+            <span className="text-slate-500 text-sm">
               Page {page} of {totalPages}
             </span>
             <button
               disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 text-sm transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-40 text-slate-600 text-sm transition-colors"
             >
               Next
             </button>
@@ -297,86 +288,85 @@ const AdminPayroll: React.FC = () => {
 
         {/* Edit Payroll Modal */}
         {editingRecord && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-slide-up">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-md shadow-xl animate-slide-up">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-white font-semibold text-base">Adjust Payroll</h3>
-                  <p className="text-slate-400 text-xs mt-0.5">
-                    {editingRecord.employee?.firstName} {editingRecord.employee?.lastName} (
-                    {editingRecord.employee?.employeeId})
+                  <h3 className="text-slate-900 font-semibold text-base">Adjust Payroll</h3>
+                  <p className="text-slate-500 text-xs mt-0.5">
+                    {editingRecord.employee?.firstName} {editingRecord.employee?.lastName} ({editingRecord.employee?.employeeId})
                   </p>
                 </div>
                 <button
                   onClick={() => setEditingRecord(null)}
-                  className="text-slate-500 hover:text-slate-300"
+                  className="text-slate-400 hover:text-slate-600"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {editMsg && (
-                <div className="mb-3 px-3 py-2 rounded-lg bg-rose-900/20 border border-rose-700/30 text-rose-400 text-xs">
+                <div className="mb-3 px-3 py-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs">
                   {editMsg}
                 </div>
               )}
 
               <form onSubmit={handleSavePayroll} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Basic Salary (₹)</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Basic Salary (₹)</label>
                   <input
                     type="number"
                     value={editForm.basicSalary}
                     onChange={(e) => setEditForm((p) => ({ ...p, basicSalary: Number(e.target.value) }))}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">HRA (₹)</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">HRA (₹)</label>
                     <input
                       type="number"
                       value={editForm.hra}
                       onChange={(e) => setEditForm((p) => ({ ...p, hra: Number(e.target.value) }))}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Special Allowance (₹)</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">Special Allowance (₹)</label>
                     <input
                       type="number"
                       value={editForm.specialAllowance}
                       onChange={(e) => setEditForm((p) => ({ ...p, specialAllowance: Number(e.target.value) }))}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Bonus / Incentive (₹)</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">Bonus / Incentive (₹)</label>
                     <input
                       type="number"
                       value={editForm.bonus}
                       onChange={(e) => setEditForm((p) => ({ ...p, bonus: Number(e.target.value) }))}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Deductions (₹)</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">Deductions (₹)</label>
                     <input
                       type="number"
                       value={editForm.deductions}
                       onChange={(e) => setEditForm((p) => ({ ...p, deductions: Number(e.target.value) }))}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:border-violet-500"
+                      className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-slate-900 text-sm focus:outline-none focus:border-brand-500"
                     />
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-slate-800/60 border border-slate-700/50 flex justify-between items-center text-xs">
-                  <span className="text-slate-400">Calculated Net Pay:</span>
-                  <span className="font-mono font-bold text-emerald-400 text-sm">
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200 flex justify-between items-center text-xs">
+                  <span className="text-slate-500">Calculated Net Pay:</span>
+                  <span className="font-mono font-bold text-emerald-700 text-sm">
                     {fmt(
                       editForm.basicSalary +
                         editForm.hra +
@@ -391,14 +381,14 @@ const AdminPayroll: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setEditingRecord(null)}
-                    className="flex-1 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors"
+                    className="flex-1 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-slate-700 text-sm font-medium transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
                   >
                     {isSaving ? (
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
