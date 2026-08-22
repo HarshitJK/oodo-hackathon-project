@@ -1,42 +1,15 @@
-const mongoose = require("mongoose");
-
-const approverSchema = new mongoose.Schema(
-  {
-    approverId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    role: {
-      type: String,
-      enum: ["manager", "admin"],
-    },
-    decision: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
-    },
-    comment: {
-      type: String,
-      default: "",
-    },
-    decidedAt: {
-      type: Date,
-      default: null,
-    },
-  },
-  { _id: false }
-);
+import mongoose from "mongoose";
 
 const leaveRequestSchema = new mongoose.Schema(
   {
-    userId: {
+    employee: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    type: {
+    leaveType: {
       type: String,
-      enum: ["paid", "sick", "unpaid"],
+      enum: ["PAID", "SICK", "UNPAID"],
       required: true,
     },
     startDate: {
@@ -51,19 +24,27 @@ const leaveRequestSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    status: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
-    },
-    // 2-step approval chain: [manager approval, HR/admin approval]
-    approverChain: {
-      type: [approverSchema],
-      default: [],
-    },
-    approverComments: {
+    attachment: {
       type: String,
       default: "",
+    },
+    status: {
+      type: String,
+      enum: ["PENDING", "APPROVED", "REJECTED"],
+      default: "PENDING",
+    },
+    approvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    rejectionComment: {
+      type: String,
+      default: "",
+    },
+    decidedAt: {
+      type: Date,
+      default: null,
     },
   },
   {
@@ -71,4 +52,5 @@ const leaveRequestSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("LeaveRequest", leaveRequestSchema);
+const LeaveRequest = mongoose.model("LeaveRequest", leaveRequestSchema);
+export default LeaveRequest;

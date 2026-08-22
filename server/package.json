@@ -2,10 +2,12 @@
   "name": "dayflow-hrms-server",
   "version": "1.0.0",
   "description": "Dayflow HRMS — Express + MongoDB backend",
+  "type": "module",
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "seed": "node seed/seed.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -17,6 +19,8 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.1",
+    "multer": "^2.2.0",
+    "nodemailer": "^9.0.5",
     "socket.io": "^4.7.5",
     "zod": "^3.23.8"
   },

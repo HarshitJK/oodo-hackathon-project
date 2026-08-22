@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const attendanceSchema = new mongoose.Schema(
   {
-    userId: {
+    employee: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -19,9 +19,13 @@ const attendanceSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    totalWorkingHours: {
+      type: Number,
+      default: null,
+    },
     status: {
       type: String,
-      enum: ["present", "absent", "half-day", "leave"],
+      enum: ["PRESENT", "ABSENT", "HALF_DAY", "LEAVE"],
       required: true,
     },
     notes: {
@@ -34,7 +38,7 @@ const attendanceSchema = new mongoose.Schema(
   }
 );
 
-// Compound index: one record per user per day
-attendanceSchema.index({ userId: 1, date: 1 }, { unique: true });
+attendanceSchema.index({ employee: 1, date: 1 }, { unique: true });
 
-module.exports = mongoose.model("Attendance", attendanceSchema);
+const Attendance = mongoose.model("Attendance", attendanceSchema);
+export default Attendance;

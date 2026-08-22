@@ -1,29 +1,9 @@
-/**
- * Socket.io setup module.
- *
- * Exports an `initSocket` function that attaches Socket.io to the HTTP server.
- * Also exports a `getIO` function so controllers can emit events without
- * needing to pass `io` as a parameter everywhere.
- *
- * Events emitted by the server:
- *   - "attendance:new"  — when a new attendance record is created
- *   - "leave:new"       — when a new leave request is submitted
- *
- * Rooms (optional future enhancement):
- *   - Employees can join room "dept:<departmentName>" for targeted events.
- */
-
-const { Server } = require("socket.io");
+import { Server } from "socket.io";
+import jwt from "jsonwebtoken";
 
 let io;
 
-/**
- * Initializes Socket.io on the given HTTP server.
- *
- * @param {import("http").Server} httpServer - Node HTTP server instance.
- * @returns {import("socket.io").Server} The Socket.io server instance.
- */
-const initSocket = (httpServer) => {
+export const initSocket = (httpServer) => {
   io = new Server(httpServer, {
     cors: {
       origin: process.env.CLIENT_URL || "http://localhost:5173",
@@ -32,38 +12,39 @@ const initSocket = (httpServer) => {
     },
   });
 
+  io.use((socket, next) => {
+    const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.split(" ")[1];
+    if (!token) {
+      return next();
+    }
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET || "default_access_secret");
+      socket.user = decoded;
+      next();
+    } catch (err) {
+      next();
+    }
+  });
+
   io.on("connection", (socket) => {
-    console.log(`🔌 Socket connected: ${socket.id}`);
+    if (socket.user?.userId) {
+      socket.join(`user:${socket.user.userId}`);
+      socket.join(`role:${socket.user.role}`);
+    }
 
-    // TODO: Authenticate socket connection using JWT from handshake
-    // const token = socket.handshake.auth?.token;
-    // if (!token) { socket.disconnect(); return; }
-
-    // Example: allow clients to join a user-specific room
     socket.on("join:room", (roomName) => {
       socket.join(roomName);
-      console.log(`Socket ${socket.id} joined room: ${roomName}`);
     });
 
-    socket.on("disconnect", (reason) => {
-      console.log(`🔌 Socket disconnected: ${socket.id} — reason: ${reason}`);
-    });
+    socket.on("disconnect", () => {});
   });
 
   return io;
 };
 
-/**
- * Returns the initialized Socket.io instance.
- * Call initSocket() before calling getIO().
- *
- * @returns {import("socket.io").Server}
- */
-const getIO = () => {
+export const getIO = () => {
   if (!io) {
     throw new Error("Socket.io not initialized. Call initSocket() first.");
   }
   return io;
 };
-
-module.exports = { initSocket, getIO };

@@ -1,13 +1,7 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-/**
- * Verifies the JWT access token from the Authorization header.
- * Attaches the decoded user payload to req.user.
- *
- * Header format: Authorization: Bearer <token>
- */
-const verifyToken = async (req, res, next) => {
+export const verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -22,13 +16,13 @@ const verifyToken = async (req, res, next) => {
 
     let decoded;
     try {
-      decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+      decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET || "default_access_secret");
     } catch (err) {
       if (err.name === "TokenExpiredError") {
         return res.status(401).json({
           success: false,
           message: "Token expired.",
-          code: "TOKEN_EXPIRED", // Client uses this code to trigger silent refresh
+          code: "TOKEN_EXPIRED",
         });
       }
       return res.status(401).json({
@@ -37,7 +31,6 @@ const verifyToken = async (req, res, next) => {
       });
     }
 
-    // Optionally verify user still exists in DB (guards against deleted accounts)
     const user = await User.findById(decoded.userId).select("-passwordHash -refreshToken");
     if (!user) {
       return res.status(401).json({
@@ -46,11 +39,16 @@ const verifyToken = async (req, res, next) => {
       });
     }
 
-    req.user = user; // { _id, employeeId, name, email, role, department, ... }
+    if (user.status !== "ACTIVE") {
+      return res.status(403).json({
+        success: false,
+        message: "Account is inactive. Please contact your administrator.",
+      });
+    }
+
+    req.user = user;
     next();
   } catch (error) {
     next(error);
   }
 };
-
-module.exports = { verifyToken };
