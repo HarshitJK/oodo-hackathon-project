@@ -272,6 +272,29 @@ const AdminPayroll: React.FC = () => {
           emptyMessage="No payroll records found for this period."
         />
 
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-end gap-3 mt-4">
+            <button
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 text-sm transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-slate-400 text-sm">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 text-sm transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        )}
+
         {/* Edit Payroll Modal */}
         {editingRecord && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">

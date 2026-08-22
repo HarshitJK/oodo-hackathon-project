@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
 import DataTable, { type Column } from "../../components/DataTable";
-import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../hooks/useSocket";
 import api from "../../api";
 import { formatDate } from "../../lib/utils";
@@ -35,7 +34,6 @@ const typeBadge: Record<string, string> = {
 };
 
 const LeaveRequests: React.FC = () => {
-  const { user } = useAuth();
   const [requests, setRequests] = useState<LeaveRequestItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);

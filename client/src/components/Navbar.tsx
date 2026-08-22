@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Bell, Search, Check, Info, Clock } from "lucide-react";
+import { Bell, Search, Check, Clock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { getGreeting, formatDate } from "../lib/utils";
 import api from "../api";

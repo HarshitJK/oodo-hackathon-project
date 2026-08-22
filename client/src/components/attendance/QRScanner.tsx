@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 
 interface QRScannerProps {
@@ -27,7 +27,7 @@ const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, onScanError, isSca
         },
         (error) => {
           if (onScanError) {
-            onScanError(error?.message || "Scan failed");
+            onScanError(typeof error === "string" ? error : "Scan failed");
           }
         }
       );

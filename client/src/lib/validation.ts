@@ -24,7 +24,7 @@ export const resetPasswordSchema = z.object({
 
 export const leaveRequestSchema = z.object({
   leaveType: z.enum(["PAID", "SICK", "UNPAID"], {
-    required_error: "Please select a leave type",
+    error: "Please select a leave type",
   }),
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
